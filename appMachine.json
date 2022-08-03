@@ -1,0 +1,108 @@
+{
+  "id": "APP_MACHINE",
+  "initial": "INITIALIZING",
+  "states": {
+    "INITIALIZING": {
+      "on": {
+        "navigate:welcome": {
+          "target": "WELCOME"
+        },
+        "navigate:home": {
+          "target": "HOME"
+        },
+        "navigate:review": {
+          "target": "REVIEW"
+        }
+      }
+    },
+    "WELCOME": {
+      "on": {
+        "onboarding:begin": {
+          "target": "ONBOARDING"
+        },
+        "navigate:login": {
+          "target": "LOGIN"
+        }
+      }
+    },
+    "HOME": {
+      "on": {
+        "navigate:review": {
+          "target": "REVIEW"
+        },
+        "navigate:session_recap": {
+          "target": "SESSION_RECAP"
+        }
+      }
+    },
+    "REVIEW": {
+      "initial": "INITIALIZING",
+      "states": {
+        "INITIALIZING": {
+          "on": {
+            "session:initialized": {
+              "target": "SHOW_CARD_FRONT"
+            }
+          }
+        },
+        "SHOW_CARD_FRONT": {
+          "initial": "INITIALIZING",
+          "states": {
+            "INITIALIZING": {
+              "on": {
+                "audio:play": {
+                  "target": "PLAYING"
+                }
+              }
+            },
+            "PLAYING": {
+              "on": {
+                "audio:pause": {
+                  "target": "PAUSED"
+                },
+                "audio:play": {}
+              }
+            },
+            "PAUSED": {
+              "on": {
+                "audio:play": {
+                  "target": "PLAYING"
+                }
+              }
+            }
+          },
+          "on": {
+            "review:reveal_card": {
+              "target": "SHOW_CARD_BACK"
+            }
+          }
+        },
+        "SHOW_CARD_BACK": {
+          "on": {
+            "review:submit_response": {
+              "target": "SHOW_CARD_FRONT"
+            },
+            "session:end": {
+              "target": "#APP_MACHINE.SESSION_RECAP"
+            }
+          }
+        }
+      }
+    },
+    "ONBOARDING": {},
+    "LOGIN": {
+      "on": {
+        "Event 2": {
+          "target": "ONBOARDING"
+        }
+      }
+    },
+    "SESSION_RECAP": {
+      "on": {
+        "navigate:home": {
+          "target": "HOME"
+        }
+      }
+    }
+  }
+}
