@@ -1,16 +1,36 @@
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View } from "react-native";
-import { useMachine } from "@xstate/react";
-import { createMachine } from "xstate";
-import APP_MACHINE from "./appMachine.json";
-import { useEffect } from "react";
+import { Button, StyleSheet, Text, View } from "react-native";
+import { useMachine, useSelector } from "@xstate/react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+} from "react";
+import { createAppMachine } from "./appMachine";
+import { ActorRef } from "xstate";
 
-const appMachine = createMachine(APP_MACHINE);
+function WelcomeContainer() {
+  const service = useContext(AppServiceContext);
+  const val = useSelector(service, (state) => state.value);
 
-function Welcome() {
+  const handlePressWelcome = useCallback(() => {
+    console.log(val);
+  }, []);
+
+  return <WelcomeComponent onPressWelcome={handlePressWelcome} />;
+}
+
+interface WelcomeComponentProps {
+  onPressWelcome: () => void;
+}
+
+function WelcomeComponent({ onPressWelcome }: WelcomeComponentProps) {
   return (
     <View style={styles.container}>
       <Text>Welcome</Text>
+      <Button onPress={onPressWelcome} title="Hello" />
     </View>
   );
 }
@@ -55,24 +75,37 @@ function Home() {
   );
 }
 
+const AppServiceContext = createContext<ActorRef<any, any>>(
+  {} as ActorRef<any, any>
+);
+
 export default function App() {
-  const [state, send] = useMachine(appMachine);
+  const appMachine = useMemo(() => createAppMachine(), []);
+  const [state, send, appService] = useMachine(appMachine);
 
   useEffect(() => {
     if (state.value === "INITIALIZING") {
-      send("navigate:home");
+      send("navigate:welcome");
     }
   }, [send]);
-  console.log(state.value);
+
+  useEffect(() => {
+    console.log("state change");
+  }, [state]);
+  // console.log(state.value);
+
+  // state.context
 
   return (
     <View style={styles.container}>
-      {state.matches("HOME") && <Home />}
-      {state.matches("LOGIN") && <Login />}
-      {state.matches("ONBOARDING") && <Onboarding />}
-      {state.matches("REVIEW") && <Review />}
-      {state.matches("SESSION_RECAP") && <SessionRecap />}
-      {state.matches("WELCOME") && <Welcome />}
+      <AppServiceContext.Provider value={appService}>
+        <Home />
+        <Login />
+        <Onboarding />
+        <Review />
+        <SessionRecap />
+        <WelcomeContainer />
+      </AppServiceContext.Provider>
       {/* <StatusBar style="auto" /> */}
     </View>
   );
