@@ -13,29 +13,43 @@ import { createAppMachine } from "./appMachine";
 import { ActorRef } from "xstate";
 
 function Welcome() {
-  const service = useContext(AppServiceContext);
-  const appState = useSelector(service, (state) => state.value);
+  const appService = useContext(AppServiceContext);
+  const appState = useSelector(appService, (state) => state.value);
 
-  const handlePressWelcome = useCallback(() => {
-    console.log(appState);
-  }, []);
+  const handleGetStarted = useCallback(() => {
+    appService.send("navigate:onboarding");
+  }, [appService]);
+
+  const handleLogin = useCallback(() => {
+    appService.send("navigate:login");
+  }, [appService]);
 
   if (appState !== "Welcome") {
     return <Fragment />;
   }
 
-  return <WelcomeComponent onPressWelcome={handlePressWelcome} />;
+  return (
+    <WelcomeComponent
+      onPressGetStarted={handleGetStarted}
+      onPressLogin={handleLogin}
+    />
+  );
 }
 
 interface WelcomeComponentProps {
-  onPressWelcome: () => void;
+  onPressGetStarted: () => void;
+  onPressLogin: () => void;
 }
 
-function WelcomeComponent({ onPressWelcome }: WelcomeComponentProps) {
+function WelcomeComponent({
+  onPressGetStarted,
+  onPressLogin,
+}: WelcomeComponentProps) {
   return (
     <View style={styles.container}>
       <Text>Welcome</Text>
-      <Button onPress={onPressWelcome} title="Hello" />
+      <Button onPress={onPressGetStarted} title="Get Started" />
+      <Button onPress={onPressLogin} title="Login" />
     </View>
   );
 }
