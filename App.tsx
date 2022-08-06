@@ -2,6 +2,7 @@ import { StatusBar } from "expo-status-bar";
 import { Button, StyleSheet, Text, View } from "react-native";
 import { useMachine, useSelector } from "@xstate/react";
 import {
+  Fragment,
   createContext,
   useCallback,
   useContext,
@@ -11,13 +12,17 @@ import {
 import { createAppMachine } from "./appMachine";
 import { ActorRef } from "xstate";
 
-function WelcomeContainer() {
+function Welcome() {
   const service = useContext(AppServiceContext);
-  const val = useSelector(service, (state) => state.value);
+  const appState = useSelector(service, (state) => state.value);
 
   const handlePressWelcome = useCallback(() => {
-    console.log(val);
+    console.log(appState);
   }, []);
+
+  if (appState !== "Welcome") {
+    return <Fragment />;
+  }
 
   return <WelcomeComponent onPressWelcome={handlePressWelcome} />;
 }
@@ -36,6 +41,13 @@ function WelcomeComponent({ onPressWelcome }: WelcomeComponentProps) {
 }
 
 function Review() {
+  const service = useContext(AppServiceContext);
+  const appState = useSelector(service, (state) => state.value);
+
+  if (appState !== "Review") {
+    return <Fragment />;
+  }
+
   return (
     <View style={styles.container}>
       <Text>Review</Text>
@@ -44,6 +56,13 @@ function Review() {
 }
 
 function Onboarding() {
+  const service = useContext(AppServiceContext);
+  const appState = useSelector(service, (state) => state.value);
+
+  if (appState !== "Onboarding") {
+    return <Fragment />;
+  }
+
   return (
     <View style={styles.container}>
       <Text>Onboarding</Text>
@@ -52,6 +71,13 @@ function Onboarding() {
 }
 
 function Login() {
+  const service = useContext(AppServiceContext);
+  const appState = useSelector(service, (state) => state.value);
+
+  if (appState !== "Login") {
+    return <Fragment />;
+  }
+
   return (
     <View style={styles.container}>
       <Text>Login</Text>
@@ -60,6 +86,13 @@ function Login() {
 }
 
 function SessionRecap() {
+  const service = useContext(AppServiceContext);
+  const appState = useSelector(service, (state) => state.value);
+
+  if (appState !== "SessionRecap") {
+    return <Fragment />;
+  }
+
   return (
     <View style={styles.container}>
       <Text>Session Recap</Text>
@@ -68,6 +101,13 @@ function SessionRecap() {
 }
 
 function Home() {
+  const service = useContext(AppServiceContext);
+  const appState = useSelector(service, (state) => state.value);
+
+  if (appState !== "Home") {
+    return <Fragment />;
+  }
+
   return (
     <View style={styles.container}>
       <Text>Home</Text>
@@ -79,22 +119,16 @@ const AppServiceContext = createContext<ActorRef<any, any>>(
   {} as ActorRef<any, any>
 );
 
+const appMachine = createAppMachine();
+
 export default function App() {
-  const appMachine = useMemo(() => createAppMachine(), []);
   const [state, send, appService] = useMachine(appMachine);
 
   useEffect(() => {
-    if (state.value === "INITIALIZING") {
+    if (state.value === "Splash") {
       send("navigate:welcome");
     }
   }, [send]);
-
-  useEffect(() => {
-    console.log("state change");
-  }, [state]);
-  // console.log(state.value);
-
-  // state.context
 
   return (
     <View style={styles.container}>
@@ -104,7 +138,7 @@ export default function App() {
         <Onboarding />
         <Review />
         <SessionRecap />
-        <WelcomeContainer />
+        <Welcome />
       </AppServiceContext.Provider>
       {/* <StatusBar style="auto" /> */}
     </View>
