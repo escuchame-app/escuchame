@@ -1,10 +1,11 @@
-import { createMachine } from "xstate";
+import { createContext } from "react";
+import { ActorRef, createMachine } from "xstate";
 
 const config = {
   id: "AppMachine",
-  initial: "Splash",
+  initial: "Init",
   states: {
-    Splash: {
+    Init: {
       on: {
         "navigate:welcome": {
           target: "Welcome",
@@ -12,44 +13,57 @@ const config = {
         "navigate:home": {
           target: "Home",
         },
-        "session:resume": {
-          target: "Review",
+        "review:resume": {
+          target: "ReviewSession",
         },
       },
     },
     Welcome: {
       on: {
-        "navigate:onboarding": {
-          target: "Onboarding",
-        },
         "navigate:login": {
           target: "Login",
         },
+        continue: {
+          target: "Home",
+        },
       },
     },
-    Review: {},
+    ReviewSession: {
+      on: {
+        "review:exit": {
+          target: "Home",
+        },
+      },
+    },
     Login: {
       on: {
         "navigate:home": {
           target: "Home",
         },
-        "navigate:onboarding": {
-          target: "Onboarding",
+        back: {
+          target: "Welcome",
         },
       },
     },
-    Onboarding: {},
     Home: {
       on: {
-        "session:start": {
-          target: "Review",
+        "review:start": {
+          target: "ReviewSession",
         },
-        "session:resume": {
-          target: "Review",
+        "review:resume": {
+          target: "ReviewSession",
+        },
+        "navigate:settings": {
+          target: "Settings",
         },
       },
     },
+    Settings: {},
   },
 };
+
+export const AppServiceContext = createContext<ActorRef<any, any>>(
+  {} as ActorRef<any, any>
+);
 
 export const createAppMachine = () => createMachine(config);

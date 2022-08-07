@@ -1,4 +1,3 @@
-import { StatusBar } from "expo-status-bar";
 import { Button, StyleSheet, Text, View } from "react-native";
 import { useMachine, useSelector } from "@xstate/react";
 import {
@@ -6,11 +5,11 @@ import {
   createContext,
   useCallback,
   useContext,
-  useEffect,
   useMemo,
 } from "react";
-import { createAppMachine } from "./appMachine";
+import { AppServiceContext, createAppMachine } from "./appMachine";
 import { ActorRef } from "xstate";
+import { Init } from "./screens/Init";
 
 function Welcome() {
   const appService = useContext(AppServiceContext);
@@ -92,6 +91,10 @@ function Login() {
     return <Fragment />;
   }
 
+  return <LoginComponent />;
+}
+
+function LoginComponent() {
   return (
     <View style={styles.container}>
       <Text>Login</Text>
@@ -129,24 +132,14 @@ function Home() {
   );
 }
 
-const AppServiceContext = createContext<ActorRef<any, any>>(
-  {} as ActorRef<any, any>
-);
-
-const appMachine = createAppMachine();
-
 export default function App() {
+  const appMachine = useMemo(() => createAppMachine(), []);
   const [state, send, appService] = useMachine(appMachine);
-
-  useEffect(() => {
-    if (state.value === "Splash") {
-      send("navigate:welcome");
-    }
-  }, [send]);
 
   return (
     <View style={styles.container}>
       <AppServiceContext.Provider value={appService}>
+        <Init />
         <Home />
         <Login />
         <Onboarding />
@@ -154,7 +147,6 @@ export default function App() {
         <SessionRecap />
         <Welcome />
       </AppServiceContext.Provider>
-      {/* <StatusBar style="auto" /> */}
     </View>
   );
 }
