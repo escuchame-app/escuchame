@@ -8,11 +8,11 @@ const Welcome = memo(() => {
   const appState = useSelector(appService, (state) => state.value);
 
   const handleGetStarted = useCallback(() => {
-    appService.send("navigate:onboarding");
+    appService.send("welcome:start");
   }, [appService]);
 
   const handleLogin = useCallback(() => {
-    appService.send("navigate:login");
+    appService.send("open:login");
   }, [appService]);
 
   if (appState !== "Welcome") {
@@ -45,11 +45,10 @@ function WelcomeComponent({
   );
 }
 
-// TODO dedupe
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: "#ffe",
     alignItems: "center",
     justifyContent: "center",
   },

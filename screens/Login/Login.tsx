@@ -1,23 +1,38 @@
 import { useSelector } from "@xstate/react";
-import React, { Fragment, memo, useContext } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import React, { Fragment, memo, useCallback, useContext } from "react";
+import { Button, StyleSheet, Text, View } from "react-native";
 import { AppServiceContext } from "../../appMachine";
 
 const Login = memo(() => {
-  const service = useContext(AppServiceContext);
-  const appState = useSelector(service, (state) => state.value);
+  const appService = useContext(AppServiceContext);
+  const appState = useSelector(appService, (state) => state.value);
+
+  const handleSubmit = useCallback(() => {
+    appService.send("login:success");
+  }, [appService]);
+
+  const handleBack = useCallback(() => {
+    appService.send("navigate:back");
+  }, [appService]);
 
   if (appState !== "Login") {
     return <Fragment />;
   }
 
-  return <LoginComponent />;
+  return <LoginComponent onPressBack={handleBack} onSubmit={handleSubmit} />;
 });
 
-function LoginComponent() {
+interface LoginComponentProps {
+  onPressBack: () => void;
+  onSubmit: () => void;
+}
+
+function LoginComponent({ onPressBack, onSubmit }: LoginComponentProps) {
   return (
     <View style={styles.container}>
-      <Text>Login</Text>
+      <Text>Welcome</Text>
+      <Button onPress={onPressBack} title="Back" />
+      <Button onPress={onSubmit} title="Submit" />
     </View>
   );
 }

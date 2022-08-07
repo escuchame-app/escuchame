@@ -20,7 +20,7 @@ const config = {
         "open:login": {
           target: "Login",
         },
-        "press:get_started": {
+        "welcome:start": {
           target: "Home",
         },
       },
@@ -34,10 +34,10 @@ const config = {
     },
     Login: {
       on: {
-        login: {
+        "login:success": {
           target: "Home",
         },
-        "close:login": {
+        "navigate:back": {
           target: "Welcome",
         },
       },
@@ -57,7 +57,7 @@ const config = {
     },
     Settings: {
       on: {
-        "close:settings": {
+        "navigate:back": {
           target: "Home",
         },
       },

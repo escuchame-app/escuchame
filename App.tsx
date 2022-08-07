@@ -1,23 +1,16 @@
-import { Button, StyleSheet, Text, View } from "react-native";
-import { useMachine, useSelector } from "@xstate/react";
-import {
-  Fragment,
-  createContext,
-  useCallback,
-  useContext,
-  useMemo,
-} from "react";
+import { useInterpret, useMachine } from "@xstate/react";
+import { useMemo } from "react";
+import { StyleSheet, View } from "react-native";
 import { AppServiceContext, createAppMachine } from "./appMachine";
-import { ActorRef } from "xstate";
-import { Init } from "./screens/Init";
-import { Welcome } from "./screens/Welcome";
 import { Home } from "./screens/Home";
+import { Init } from "./screens/Init";
 import { Login } from "./screens/Login";
 import { Review } from "./screens/Review";
+import { Welcome } from "./screens/Welcome";
 
 export default function App() {
   const appMachine = useMemo(() => createAppMachine(), []);
-  const [state, send, appService] = useMachine(appMachine);
+  const appService = useInterpret(appMachine);
 
   return (
     <View style={styles.container}>
