@@ -2,7 +2,7 @@
 
 Language learning through listening.
 
-## State Machine Configuration
+## State Machine Documentation
 
-Available here:
-https://stately.ai/registry/editor/6fd65478-5f41-4f02-85cd-7d3a8ad13bd1
+App Machine:
+https://stately.ai/registry/editor/f0118688-d1a3-495f-9688-0a7ce77ea106

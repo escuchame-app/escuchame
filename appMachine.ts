@@ -1,6 +1,9 @@
 import { createContext } from "react";
 import { ActorRef, createMachine } from "xstate";
 
+// Manually kept in sync with web ui editor:
+// https://stately.ai/registry/editor/f0118688-d1a3-495f-9688-0a7ce77ea106
+
 const config = {
   id: "AppMachine",
   initial: "Init",
@@ -27,7 +30,10 @@ const config = {
     },
     Review: {
       on: {
-        "review:exit": {
+        "review:end": {
+          target: "Home",
+        },
+        "navigate:back": {
           target: "Home",
         },
       },

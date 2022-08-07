@@ -1,5 +1,5 @@
 import { useSelector } from "@xstate/react";
-import React, { Fragment, memo, useCallback, useContext } from "react";
+import React, { FC, Fragment, memo, useCallback, useContext } from "react";
 import { Button, StyleSheet, Text, View } from "react-native";
 import { AppServiceContext } from "../../appMachine";
 
@@ -22,7 +22,7 @@ interface HomeComponentProps {
   onPressStart: () => void;
 }
 
-const HomeComponent = ({ onPressStart }) => {
+const HomeComponent: FC<HomeComponentProps> = ({ onPressStart }) => {
   return (
     <View style={styles.container}>
       <Text>Home</Text>
