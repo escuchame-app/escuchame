@@ -1,22 +1,35 @@
 import { useSelector } from "@xstate/react";
-import React, { Fragment, memo, useContext } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import React, { Fragment, memo, useCallback, useContext } from "react";
+import { Button, StyleSheet, Text, View } from "react-native";
 import { AppServiceContext } from "../../appMachine";
 
 const Home = memo(() => {
-  const service = useContext(AppServiceContext);
-  const appState = useSelector(service, (state) => state.value);
+  const appService = useContext(AppServiceContext);
+  const appState = useSelector(appService, (state) => state.value);
+
+  const handleStart = useCallback(() => {
+    appService.send("review:start");
+  }, [appService]);
 
   if (appState !== "Home") {
     return <Fragment />;
   }
 
+  return <HomeComponent onPressStart={handleStart} />;
+});
+
+interface HomeComponentProps {
+  onPressStart: () => void;
+}
+
+const HomeComponent = ({ onPressStart }) => {
   return (
     <View style={styles.container}>
       <Text>Home</Text>
+      <Button onPress={onPressStart} title="Start" />
     </View>
   );
-});
+};
 
 const styles = StyleSheet.create({
   container: {
