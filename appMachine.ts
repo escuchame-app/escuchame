@@ -13,22 +13,19 @@ const config = {
         "navigate:home": {
           target: "Home",
         },
-        "review:resume": {
-          target: "ReviewSession",
-        },
       },
     },
     Welcome: {
       on: {
-        "navigate:login": {
+        "open:login": {
           target: "Login",
         },
-        continue: {
+        "press:get_started": {
           target: "Home",
         },
       },
     },
-    ReviewSession: {
+    Review: {
       on: {
         "review:exit": {
           target: "Home",
@@ -37,10 +34,10 @@ const config = {
     },
     Login: {
       on: {
-        "navigate:home": {
+        login: {
           target: "Home",
         },
-        back: {
+        "close:login": {
           target: "Welcome",
         },
       },
@@ -48,17 +45,23 @@ const config = {
     Home: {
       on: {
         "review:start": {
-          target: "ReviewSession",
+          target: "Review",
         },
         "review:resume": {
-          target: "ReviewSession",
+          target: "Review",
         },
-        "navigate:settings": {
+        "open:settings": {
           target: "Settings",
         },
       },
     },
-    Settings: {},
+    Settings: {
+      on: {
+        "close:settings": {
+          target: "Home",
+        },
+      },
+    },
   },
 };
 
