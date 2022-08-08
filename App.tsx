@@ -3,14 +3,14 @@ import { useMemo } from "react";
 import { StyleSheet, View } from "react-native";
 import { AppServiceContext, createAppMachine } from "./appMachine";
 import { config } from "./config";
-import { Home } from "./screens/Home";
-import { Init } from "./screens/Init";
-import { Login } from "./screens/Login";
-import { Review } from "./screens/Review";
-import { Settings } from "./screens/Settings";
-import { Welcome } from "./screens/Welcome";
+import { Home } from "./scenes/Home";
+import { Init } from "./scenes/Init";
+import { Login } from "./scenes/Login";
+import { Review } from "./scenes/Review";
+import { Settings } from "./scenes/Settings";
+import { Welcome } from "./scenes/Welcome";
 import { initializeApp, getApps } from "firebase/app";
-import { Onboarding } from "./screens/Onboarding";
+import { Onboarding } from "./scenes/Onboarding";
 
 if (getApps().length === 0) {
   initializeApp(config.firebase);
