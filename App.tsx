@@ -2,14 +2,21 @@ import { useInterpret, useMachine } from "@xstate/react";
 import { useMemo } from "react";
 import { StyleSheet, View } from "react-native";
 import { AppServiceContext, createAppMachine } from "./appMachine";
+import { config } from "./config";
 import { Home } from "./screens/Home";
 import { Init } from "./screens/Init";
 import { Login } from "./screens/Login";
 import { Review } from "./screens/Review";
 import { Settings } from "./screens/Settings";
 import { Welcome } from "./screens/Welcome";
+import { initializeApp, getApps } from "firebase/app";
+
+if (getApps().length === 0) {
+  initializeApp(config.firebase);
+}
 
 export default function App() {
+  console.log(config.firebase);
   const appMachine = useMemo(() => createAppMachine(), []);
   const appService = useInterpret(appMachine);
 
