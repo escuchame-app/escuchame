@@ -11,22 +11,36 @@ const Home = memo(() => {
     appService.send("review:start");
   }, [appService]);
 
+  const handleOpenSettings = useCallback(() => {
+    appService.send("open:settings");
+  }, [appService]);
+
   if (appState !== "Home") {
     return <Fragment />;
   }
 
-  return <HomeComponent onPressStart={handleStart} />;
+  return (
+    <HomeComponent
+      onPressStart={handleStart}
+      onPressOpenSettings={handleOpenSettings}
+    />
+  );
 });
 
 interface HomeComponentProps {
   onPressStart: () => void;
+  onPressOpenSettings: () => void;
 }
 
-const HomeComponent: FC<HomeComponentProps> = ({ onPressStart }) => {
+const HomeComponent: FC<HomeComponentProps> = ({
+  onPressStart,
+  onPressOpenSettings,
+}) => {
   return (
     <View style={styles.container}>
       <Text>Home</Text>
       <Button onPress={onPressStart} title="Start" />
+      <Button onPress={onPressOpenSettings} title="Settings" />
     </View>
   );
 };

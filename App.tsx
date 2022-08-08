@@ -6,6 +6,7 @@ import { Home } from "./screens/Home";
 import { Init } from "./screens/Init";
 import { Login } from "./screens/Login";
 import { Review } from "./screens/Review";
+import { Settings } from "./screens/Settings";
 import { Welcome } from "./screens/Welcome";
 
 export default function App() {
@@ -19,6 +20,7 @@ export default function App() {
         <Home />
         <Login />
         <Review />
+        <Settings />
         <Welcome />
       </AppServiceContext.Provider>
     </View>

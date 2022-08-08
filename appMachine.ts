@@ -66,6 +66,9 @@ const config = {
         "navigate:back": {
           target: "Home",
         },
+        logout: {
+          target: "Welcome",
+        },
       },
     },
   },
