@@ -10,13 +10,13 @@ import { Review } from "./screens/Review";
 import { Settings } from "./screens/Settings";
 import { Welcome } from "./screens/Welcome";
 import { initializeApp, getApps } from "firebase/app";
+import { Onboarding } from "./screens/Onboarding";
 
 if (getApps().length === 0) {
   initializeApp(config.firebase);
 }
 
 export default function App() {
-  console.log(config.firebase);
   const appMachine = useMemo(() => createAppMachine(), []);
   const appService = useInterpret(appMachine);
 
@@ -26,6 +26,7 @@ export default function App() {
         <Init />
         <Home />
         <Login />
+        <Onboarding />
         <Review />
         <Settings />
         <Welcome />

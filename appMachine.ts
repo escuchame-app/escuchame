@@ -24,7 +24,7 @@ const config = {
           target: "Login",
         },
         "welcome:start": {
-          target: "Home",
+          target: "Onboarding",
         },
       },
     },
@@ -68,6 +68,13 @@ const config = {
         },
         logout: {
           target: "Welcome",
+        },
+      },
+    },
+    Onboarding: {
+      on: {
+        "onboarding:end": {
+          target: "Home",
         },
       },
     },
