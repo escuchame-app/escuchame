@@ -1,7 +1,7 @@
 import { useSelector } from "@xstate/react";
 import React, { FC, Fragment, memo, useCallback, useContext } from "react";
 import { Button, StyleSheet, Text, View } from "react-native";
-import { AppServiceContext } from "../../appMachine";
+import { AppServiceContext } from "../../AppService";
 
 const Home = memo(() => {
   const appService = useContext(AppServiceContext);

@@ -1,7 +1,8 @@
 import { useInterpret, useMachine } from "@xstate/react";
 import { useMemo } from "react";
 import { StyleSheet, View } from "react-native";
-import { AppServiceContext, createAppMachine } from "./appMachine";
+import { appMachine } from "./appMachine";
+import { AppServiceContext } from "./AppService";
 import { config } from "./config";
 import { Home } from "./scenes/Home";
 import { Init } from "./scenes/Init";
@@ -17,7 +18,6 @@ if (getApps().length === 0) {
 }
 
 export default function App() {
-  const appMachine = useMemo(() => createAppMachine(), []);
   const appService = useInterpret(appMachine);
 
   return (

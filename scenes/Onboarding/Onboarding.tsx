@@ -1,32 +1,56 @@
-import { useSelector } from "@xstate/react";
-import React, { Fragment, memo, useCallback, useContext } from "react";
+import { useInterpret, useMachine, useSelector } from "@xstate/react";
+import React, { Fragment, memo, useCallback, useContext, useMemo } from "react";
 import { Button, StyleSheet, Text, View } from "react-native";
-import { AppServiceContext } from "../../appMachine";
+import { AppServiceContext } from "../../AppService";
+import {
+  createOnboardingMachine,
+  OnboardingServiceContext,
+} from "./onboardingMachine";
 
 const Onboarding = memo(() => {
+  const onboardingMachine = useMemo(() => createOnboardingMachine(), []);
+  const service = useInterpret(onboardingMachine, {
+    services: {
+      createNewUser: (_, e) => {
+        console.log("create new user");
+        // TODO firebase
+        return Promise.resolve();
+      },
+    },
+  });
+
   const appService = useContext(AppServiceContext);
   const appState = useSelector(appService, (state) => state.value);
-
-  const handleContinue = useCallback(() => {
-    appService.send("onboarding:end");
-  }, [appService]);
 
   if (appState !== "Onboarding") {
     return <Fragment />;
   }
 
-  return <OnboardingComponent onPressContinue={handleContinue} />;
+  return (
+    <OnboardingServiceContext.Provider value={service}>
+      <OnboardingComponent />
+    </OnboardingServiceContext.Provider>
+  );
 });
 
-interface OnboardingComponentProps {
-  onPressContinue: () => void;
-}
+function OnboardingComponent() {
+  const onboardingService = useContext(OnboardingServiceContext);
+  const onboardingState = useSelector(
+    onboardingService,
+    (state) => state.value
+  );
 
-function OnboardingComponent({ onPressContinue }: OnboardingComponentProps) {
+  const isReady = onboardingState === "Success";
+
+  const appService = useContext(AppServiceContext);
+  const handleContinue = useCallback(() => {
+    appService.send("onboarding:end");
+  }, [appService]);
+
   return (
     <View style={styles.container}>
       <Text>Onboarding</Text>
-      <Button onPress={onPressContinue} title="Continue" />
+      {isReady && <Button onPress={handleContinue} title="Continue" />}
     </View>
   );
 }

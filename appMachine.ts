@@ -1,88 +1,106 @@
-import { createContext } from "react";
-import { ActorRef, createMachine } from "xstate";
+import { createMachine, assign } from "xstate";
+import { createModel } from "xstate/lib/model";
 
-// Manually kept in sync with web ui editor:
-// https://stately.ai/registry/editor/f0118688-d1a3-495f-9688-0a7ce77ea106
+// Keep in sync with web ui editor @
+// https://stately.ai/viz/d4f24999-f44d-4450-8e9c-ff1574a7a097
 
-const config = {
+const appModel = createModel(
+  {
+    userId: undefined as string | undefined,
+  },
+  {
+    events: {
+      NAVIGATE_WELCOME: () => ({}),
+      NAVIGATE_HOME: () => ({}),
+      NAVIGATE_BACK: () => ({}),
+      LOGIN_SUCCESS: () => ({}),
+      LOGOUT: () => ({}),
+      OPEN_LOGIN: () => ({}),
+      OPEN_SETTINGS: () => ({}),
+      ONBOARDING_END: () => ({}),
+      REVIEW_END: () => ({}),
+      REVIEW_RESUME: () => ({}),
+      REVIEW_START: () => ({}),
+      WELCOME_START: () => ({}),
+    },
+  }
+);
+
+export const appMachine = appModel.createMachine({
   id: "AppMachine",
   initial: "Init",
+  context: appModel.initialContext,
   states: {
     Init: {
       on: {
-        "navigate:welcome": {
+        NAVIGATE_WELCOME: {
           target: "Welcome",
         },
-        "navigate:home": {
+        NAVIGATE_HOME: {
           target: "Home",
         },
       },
     },
     Welcome: {
+      entry: "createNewUser",
       on: {
-        "open:login": {
+        OPEN_LOGIN: {
           target: "Login",
         },
-        "welcome:start": {
+        WELCOME_START: {
           target: "Onboarding",
         },
       },
     },
     Review: {
       on: {
-        "review:end": {
+        REVIEW_END: {
           target: "Home",
         },
-        "navigate:back": {
+        NAVIGATE_BACK: {
           target: "Home",
         },
       },
     },
     Login: {
       on: {
-        "login:success": {
+        LOGIN_SUCCESS: {
           target: "Home",
         },
-        "navigate:back": {
+        NAVIGATE_BACK: {
           target: "Welcome",
         },
       },
     },
     Home: {
       on: {
-        "review:start": {
+        REVIEW_START: {
           target: "Review",
         },
-        "review:resume": {
+        REVIEW_RESUME: {
           target: "Review",
         },
-        "open:settings": {
+        OPEN_SETTINGS: {
           target: "Settings",
         },
       },
     },
     Settings: {
       on: {
-        "navigate:back": {
+        NAVIGATE_BACK: {
           target: "Home",
         },
-        logout: {
+        LOGOUT: {
           target: "Welcome",
         },
       },
     },
     Onboarding: {
       on: {
-        "onboarding:end": {
+        ONBOARDING_END: {
           target: "Home",
         },
       },
     },
   },
-};
-
-export const AppServiceContext = createContext<ActorRef<any, any>>(
-  {} as ActorRef<any, any>
-);
-
-export const createAppMachine = () => createMachine(config);
+});
