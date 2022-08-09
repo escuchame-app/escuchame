@@ -8,11 +8,11 @@ const Home = memo(() => {
   const appState = useSelector(appService, (state) => state.value);
 
   const handleStart = useCallback(() => {
-    appService.send("review:start");
+    appService.send("REVIEW_START");
   }, [appService]);
 
   const handleOpenSettings = useCallback(() => {
-    appService.send("open:settings");
+    appService.send("OPEN_SETTINGS");
   }, [appService]);
 
   if (appState !== "Home") {

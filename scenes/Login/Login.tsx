@@ -8,11 +8,11 @@ const Login = memo(() => {
   const appState = useSelector(appService, (state) => state.value);
 
   const handleSubmit = useCallback(() => {
-    appService.send("login:success");
+    appService.send("LOGIN_SUCCESS");
   }, [appService]);
 
   const handleBack = useCallback(() => {
-    appService.send("navigate:back");
+    appService.send("NAVIGATE_BACK");
   }, [appService]);
 
   if (appState !== "Login") {

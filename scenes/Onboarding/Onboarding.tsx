@@ -44,7 +44,7 @@ function OnboardingComponent() {
 
   const appService = useContext(AppServiceContext);
   const handleContinue = useCallback(() => {
-    appService.send("onboarding:end");
+    appService.send("ONBOARDING_END");
   }, [appService]);
 
   return (

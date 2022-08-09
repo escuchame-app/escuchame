@@ -9,7 +9,7 @@ SplashScreen.preventAutoHideAsync();
 const Init = memo(() => {
   const appService = useContext(AppServiceContext);
   useEffect(() => {
-    appService.send("navigate:welcome");
+    appService.send("NAVIGATE_WELCOME");
     SplashScreen.hideAsync().then(noop);
   }, [appService]);
 

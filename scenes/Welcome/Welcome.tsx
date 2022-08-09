@@ -8,11 +8,11 @@ const Welcome = memo(() => {
   const appState = useSelector(appService, (state) => state.value);
 
   const handleGetStarted = useCallback(() => {
-    appService.send("welcome:start");
+    appService.send("WELCOME_START");
   }, [appService]);
 
   const handleLogin = useCallback(() => {
-    appService.send("open:login");
+    appService.send("OPEN_LOGIN");
   }, [appService]);
 
   if (appState !== "Welcome") {
