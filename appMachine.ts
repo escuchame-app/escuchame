@@ -10,97 +10,137 @@ const appModel = createModel(
   },
   {
     events: {
-      NAVIGATE_WELCOME: () => ({}),
-      NAVIGATE_HOME: () => ({}),
-      NAVIGATE_BACK: () => ({}),
-      LOGIN_SUCCESS: () => ({}),
       LOGOUT: () => ({}),
       OPEN_LOGIN: () => ({}),
       OPEN_SETTINGS: () => ({}),
-      ONBOARDING_END: () => ({}),
-      REVIEW_END: () => ({}),
       REVIEW_RESUME: () => ({}),
       REVIEW_START: () => ({}),
+      REVIEW_PAUSE: () => ({}),
       WELCOME_START: () => ({}),
     },
   }
 );
 
-export const appMachine = appModel.createMachine({
-  id: "AppMachine",
-  initial: "Init",
-  context: appModel.initialContext,
-  states: {
-    Init: {
-      entry: "bootstrapApp",
-      on: {
-        NAVIGATE_WELCOME: {
-          target: "Welcome",
+export const appMachine = appModel.createMachine(
+  {
+    id: "AppMachine",
+    initial: "Init",
+    context: appModel.initialContext,
+    states: {
+      Init: {
+        initial: "Loading",
+        states: {
+          Loading: {
+            invoke: {
+              src: "bootstrapApp",
+              onDone: "Success",
+              onError: "Failure",
+            },
+          },
+          Success: {
+            type: "final" as const,
+          },
+          Failure: {
+            type: "final" as const,
+          },
         },
-        NAVIGATE_HOME: {
-          target: "Home",
-        },
+        onDone: [
+          {
+            target: "Home",
+            cond: "isLoggedIn",
+          },
+          {
+            target: "Welcome",
+          },
+        ],
       },
-    },
-    Welcome: {
-      on: {
-        OPEN_LOGIN: {
-          target: "Login",
-        },
-        WELCOME_START: {
+      Welcome: {
+        onDone: {
           target: "Onboarding",
         },
+        on: {
+          OPEN_LOGIN: {
+            target: "Login",
+          },
+        },
       },
-    },
-    Review: {
-      on: {
-        REVIEW_END: {
+      Review: {
+        onDone: {
           target: "Home",
         },
-        NAVIGATE_BACK: {
+        on: {
+          REVIEW_PAUSE: {
+            target: "Home",
+          },
+        },
+      },
+      Login: {
+        onDone: [
+          {
+            target: "Home",
+            cond: "isLoggedIn",
+          },
+          {
+            target: "Welcome",
+          },
+        ],
+      },
+      Home: {
+        on: {
+          REVIEW_START: {
+            target: "Review",
+          },
+          REVIEW_RESUME: {
+            target: "Review",
+          },
+          OPEN_SETTINGS: {
+            target: "Settings",
+          },
+        },
+      },
+      Settings: {
+        onDone: {
           target: "Home",
         },
-      },
-    },
-    Login: {
-      on: {
-        LOGIN_SUCCESS: {
-          target: "Home",
+        states: {
+          Idle: {},
+          Loading: {},
         },
-        NAVIGATE_BACK: {
-          target: "Welcome",
-        },
-      },
-    },
-    Home: {
-      on: {
-        REVIEW_START: {
-          target: "Review",
-        },
-        REVIEW_RESUME: {
-          target: "Review",
-        },
-        OPEN_SETTINGS: {
-          target: "Settings",
+        on: {
+          LOGOUT: {
+            target: "Welcome",
+          },
         },
       },
-    },
-    Settings: {
-      on: {
-        NAVIGATE_BACK: {
-          target: "Home",
+      Onboarding: {
+        initial: "Loading",
+        states: {
+          Loading: {
+            invoke: {
+              src: "createNewUser",
+              onDone: "Success",
+              onError: "Failure",
+            },
+          },
+          Success: {
+            type: "final" as const,
+          },
+          Failure: {
+            type: "final" as const,
+          },
         },
-        LOGOUT: {
-          target: "Welcome",
-        },
-      },
-    },
-    Onboarding: {
-      on: {
-        ONBOARDING_END: {
+
+        onDone: {
           target: "Home",
         },
       },
     },
   },
-});
+  {
+    guards: {
+      isLoggedIn: (context) => {
+        return !!context.userId;
+      },
+    },
+  }
+);

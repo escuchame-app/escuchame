@@ -8,22 +8,11 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 // Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();
 
+// TODO might not need this component? Maybe do app in app.tsx
 const Init = memo(() => {
-  const appService = useContext(AppServiceContext);
-
   useEffect(() => {
-    const auth = getAuth();
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        appService.send("NAVIGATE_HOME");
-      } else {
-        appService.send("NAVIGATE_WELCOME");
-      }
-
-      SplashScreen.hideAsync().then(noop);
-      unsubscribe();
-    });
-  }, [appService]);
+    SplashScreen.hideAsync().then(noop);
+  }, []);
 
   return <Fragment />;
 });
