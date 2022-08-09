@@ -32,6 +32,7 @@ export const appMachine = appModel.createMachine({
   context: appModel.initialContext,
   states: {
     Init: {
+      entry: "bootstrapApp",
       on: {
         NAVIGATE_WELCOME: {
           target: "Welcome",
@@ -42,7 +43,6 @@ export const appMachine = appModel.createMachine({
       },
     },
     Welcome: {
-      entry: "createNewUser",
       on: {
         OPEN_LOGIN: {
           target: "Login",
