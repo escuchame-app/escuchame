@@ -24,7 +24,7 @@ interface BootstrapProps {
 
 const bootstrapApp = () =>
   new Promise<BootstrapProps>((resolve, reject) => {
-    resolve({ userId: undefined });
+    resolve({ userId: "123" });
   });
 
 const createNewUser = () =>
@@ -52,12 +52,14 @@ export default function App() {
     <View style={styles.container}>
       <AppServiceContext.Provider value={appService}>
         <Init />
+        <Welcome />
+        {/* <Init />
         <Home />
         <Login />
         <Onboarding />
         <Review />
         <Settings />
-        <Welcome />
+        <Welcome /> */}
       </AppServiceContext.Provider>
     </View>
   );

@@ -1,6 +1,6 @@
 import { createContext } from "react";
-import { ActorRef } from "xstate";
+import { AppActor } from "./appMachine";
 
-export const AppServiceContext = createContext<ActorRef<any, any>>(
-  {} as ActorRef<any, any>
+export const AppServiceContext = createContext<AppActor>(
+  {} as AppActor
 );

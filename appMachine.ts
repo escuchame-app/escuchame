@@ -1,4 +1,4 @@
-import { createMachine, assign } from "xstate";
+import { ContextFrom, EventFrom, ActorRefFrom } from "xstate";
 import { createModel } from "xstate/lib/model";
 
 // Keep in sync with web ui editor @
@@ -16,6 +16,9 @@ const appModel = createModel(
       REVIEW_RESUME: () => ({}),
       REVIEW_START: () => ({}),
       REVIEW_PAUSE: () => ({}),
+      CONTINUE: () => ({}),
+      LOGIN: () => ({}),
+      GET_STARTED: () => ({}),
       WELCOME_START: () => ({}),
     },
   }
@@ -54,16 +57,7 @@ export const appMachine = appModel.createMachine(
           },
         ],
       },
-      Welcome: {
-        onDone: {
-          target: "Onboarding",
-        },
-        on: {
-          OPEN_LOGIN: {
-            target: "Login",
-          },
-        },
-      },
+
       Review: {
         onDone: {
           target: "Home",
@@ -118,20 +112,27 @@ export const appMachine = appModel.createMachine(
           Loading: {
             invoke: {
               src: "createNewUser",
-              onDone: "Success",
-              onError: "Failure",
+              onDone: "Idle",
+              onError: "Error",
             },
           },
-          Success: {
-            type: "final" as const,
-          },
-          Failure: {
-            type: "final" as const,
+          Idle: {},
+          Error: {},
+        },
+        on: {
+          CONTINUE: {
+            target: "Home",
           },
         },
-
-        onDone: {
-          target: "Home",
+      },
+      Welcome: {
+        on: {
+          LOGIN: {
+            target: "Login",
+          },
+          GET_STARTED: {
+            target: "Onboarding",
+          },
         },
       },
     },
@@ -144,3 +145,7 @@ export const appMachine = appModel.createMachine(
     },
   }
 );
+
+export type AppContext = ContextFrom<typeof appModel>;
+export type AppEvent = EventFrom<typeof appModel>;
+export type AppActor = ActorRefFrom<typeof appMachine>;

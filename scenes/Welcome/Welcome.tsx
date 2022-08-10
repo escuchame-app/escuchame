@@ -8,11 +8,11 @@ const Welcome = memo(() => {
   const appState = useSelector(appService, (state) => state.value);
 
   const handleGetStarted = useCallback(() => {
-    appService.send("WELCOME_START");
+    appService.send("GET_STARTED");
   }, [appService]);
 
   const handleLogin = useCallback(() => {
-    appService.send("OPEN_LOGIN");
+    appService.send("LOGIN");
   }, [appService]);
 
   if (appState !== "Welcome") {
@@ -25,6 +25,8 @@ const Welcome = memo(() => {
       onPressLogin={handleLogin}
     />
   );
+
+  return <Fragment />;
 });
 
 interface WelcomeComponentProps {
