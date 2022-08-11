@@ -1,43 +1,35 @@
 import { useSelector } from "@xstate/react";
 import React, { FC, Fragment, memo, useCallback, useContext } from "react";
 import { Button, StyleSheet, Text, View } from "react-native";
+import { appModel } from "../../appMachine";
 import { AppServiceContext } from "../../AppService";
 
-const Settings = memo(() => {
+const SettingsScene = memo(() => {
   const appService = useContext(AppServiceContext);
-  const appState = useSelector(appService, (state) => state.value);
+  const appState = useSelector(appService, (state) => state);
 
-  const handleBack = useCallback(() => {
-    appService.send("NAVIGATE_BACK");
-  }, []);
-
-  const handleLogout = useCallback(() => {
-    appService.send("LOGOUT");
-  }, []);
-
-  if (appState !== "Settings") {
+  if (!appState.matches("Settings")) {
     return <Fragment />;
   }
 
-  return (
-    <SettingsComponent onPressBack={handleBack} onPressLogout={handleLogout} />
-  );
+  return <SettingsComponent />;
 });
 
-interface SettingsComponentProps {
-  onPressLogout: () => void;
-  onPressBack: () => void;
-}
+const SettingsComponent: FC = ({}) => {
+  const appService = useContext(AppServiceContext);
+  const handleBack = useCallback(() => {
+    appService.send(appModel.events.BACK());
+  }, []);
 
-const SettingsComponent: FC<SettingsComponentProps> = ({
-  onPressLogout,
-  onPressBack,
-}) => {
+  const handleLogout = useCallback(() => {
+    appService.send(appModel.events.LOGOUT());
+  }, []);
+
   return (
     <View style={styles.container}>
       <Text>Settings</Text>
-      <Button onPress={onPressBack} title="Back" />
-      <Button onPress={onPressLogout} title="Logout" />
+      <Button onPress={handleBack} title="Back" />
+      <Button onPress={handleLogout} title="Logout" />
     </View>
   );
 };
@@ -51,4 +43,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export { Settings };
+export { SettingsScene };

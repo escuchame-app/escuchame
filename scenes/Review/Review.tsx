@@ -1,32 +1,31 @@
 import { useSelector } from "@xstate/react";
 import React, { FC, Fragment, memo, useCallback, useContext } from "react";
 import { Button, StyleSheet, Text, View } from "react-native";
+import { appModel } from "../../appMachine";
 import { AppServiceContext } from "../../AppService";
 
-const Review = memo(() => {
+const ReviewScene = memo(() => {
   const appService = useContext(AppServiceContext);
-  const appState = useSelector(appService, (state) => state.value);
+  const appState = useSelector(appService, (state) => state);
 
-  const handleBack = useCallback(() => {
-    appService.send("NAVIGATE_BACK");
-  }, [appService]);
-
-  if (appState !== "Review") {
+  if (!appState.matches("Review")) {
     return <Fragment />;
   }
 
-  return <ReviewComponent onPressBack={handleBack} />;
+  return <ReviewComponent />;
 });
 
-interface ReviewComponentProps {
-  onPressBack: () => void;
-}
+const ReviewComponent: FC = () => {
+  const appService = useContext(AppServiceContext);
 
-const ReviewComponent: FC<ReviewComponentProps> = ({ onPressBack }) => {
+  const handlePause = useCallback(() => {
+    appService.send(appModel.events.PAUSE_REVIEW());
+  }, [appService]);
+
   return (
     <View style={styles.container}>
       <Text>Review</Text>
-      <Button onPress={onPressBack} title="Back" />
+      <Button onPress={handlePause} title="Pause" />
     </View>
   );
 };
@@ -40,4 +39,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export { Review };
+export { ReviewScene };

@@ -9,7 +9,7 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 SplashScreen.preventAutoHideAsync();
 
 // TODO might not need this component? Maybe do app in app.tsx
-const Init = memo(() => {
+const InitScene = memo(() => {
   useEffect(() => {
     SplashScreen.hideAsync().then(noop);
   }, []);
@@ -17,4 +17,4 @@ const Init = memo(() => {
   return <Fragment />;
 });
 
-export { Init };
+export { InitScene };

@@ -1,46 +1,36 @@
 import { useSelector } from "@xstate/react";
 import React, { FC, Fragment, memo, useCallback, useContext } from "react";
 import { Button, StyleSheet, Text, View } from "react-native";
+import { appModel } from "../../appMachine";
 import { AppServiceContext } from "../../AppService";
 
-const Home = memo(() => {
+const HomeScene = memo(() => {
   const appService = useContext(AppServiceContext);
   const appState = useSelector(appService, (state) => state.value);
-
-  const handleStart = useCallback(() => {
-    appService.send("REVIEW_START");
-  }, [appService]);
-
-  const handleOpenSettings = useCallback(() => {
-    appService.send("OPEN_SETTINGS");
-  }, [appService]);
 
   if (appState !== "Home") {
     return <Fragment />;
   }
 
-  return (
-    <HomeComponent
-      onPressStart={handleStart}
-      onPressOpenSettings={handleOpenSettings}
-    />
-  );
+  return <HomeComponent />;
 });
 
-interface HomeComponentProps {
-  onPressStart: () => void;
-  onPressOpenSettings: () => void;
-}
+const HomeComponent: FC = () => {
+  const appService = useContext(AppServiceContext);
 
-const HomeComponent: FC<HomeComponentProps> = ({
-  onPressStart,
-  onPressOpenSettings,
-}) => {
+  const handleStart = useCallback(() => {
+    appService.send(appModel.events.START_REVIEW());
+  }, [appService]);
+
+  const handleOpenSettings = useCallback(() => {
+    appService.send(appModel.events.OPEN_SETTINGS());
+  }, [appService]);
+
   return (
     <View style={styles.container}>
       <Text>Home</Text>
-      <Button onPress={onPressStart} title="Start" />
-      <Button onPress={onPressOpenSettings} title="Settings" />
+      <Button onPress={handleStart} title="Start" />
+      <Button onPress={handleOpenSettings} title="Settings" />
     </View>
   );
 };
@@ -54,4 +44,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export { Home };
+export { HomeScene };

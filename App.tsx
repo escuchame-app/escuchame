@@ -5,61 +5,31 @@ import { StyleSheet, View } from "react-native";
 import { appMachine } from "./appMachine";
 import { AppServiceContext } from "./AppService";
 import { config } from "./config";
-import { Home } from "./scenes/Home";
-import { Init } from "./scenes/Init";
-import { Login } from "./scenes/Login";
-import { Onboarding } from "./scenes/Onboarding";
-import { Review } from "./scenes/Review";
-import { Settings } from "./scenes/Settings";
-import { Welcome } from "./scenes/Welcome";
-import { send } from "xstate";
+import { HomeScene } from "./scenes/Home";
+import { InitScene } from "./scenes/Init";
+import { LoginScene } from "./scenes/Login";
+import { OnboardingScene } from "./scenes/Onboarding";
+import { ReviewScene } from "./scenes/Review";
+import { SettingsScene } from "./scenes/Settings";
+import { WelcomeScene } from "./scenes/Welcome";
 
 if (getApps().length === 0) {
   initializeApp(config.firebase);
 }
 
-interface BootstrapProps {
-  userId?: string;
-}
-
-const bootstrapApp = () =>
-  new Promise<BootstrapProps>((resolve, reject) => {
-    resolve({ userId: "123" });
-  });
-
-const createNewUser = () =>
-  new Promise((resolve, reject) => {
-    const auth = getAuth();
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        resolve(user);
-      } else {
-        reject();
-      }
-      unsubscribe();
-    });
-  });
-
 export default function App() {
-  const appService = useInterpret(appMachine, {
-    services: {
-      bootstrapApp,
-      createNewUser,
-    },
-  });
+  const appService = useInterpret(appMachine);
 
   return (
     <View style={styles.container}>
       <AppServiceContext.Provider value={appService}>
-        <Init />
-        <Welcome />
-        {/* <Init />
-        <Home />
-        <Login />
-        <Onboarding />
-        <Review />
-        <Settings />
-        <Welcome /> */}
+        <InitScene />
+        <WelcomeScene />
+        <OnboardingScene />
+        <LoginScene />
+        <HomeScene />
+        <ReviewScene />
+        <SettingsScene />
       </AppServiceContext.Provider>
     </View>
   );

@@ -1,25 +1,37 @@
-import { ContextFrom, EventFrom, ActorRefFrom } from "xstate";
+import { assign, ContextFrom, EventFrom, ActorRefFrom } from "xstate";
 import { createModel } from "xstate/lib/model";
 
 // Keep in sync with web ui editor @
 // https://stately.ai/viz/d4f24999-f44d-4450-8e9c-ff1574a7a097
 
-const appModel = createModel(
+export const appModel = createModel(
   {
     userId: undefined as string | undefined,
   },
   {
     events: {
-      LOGOUT: () => ({}),
+      // Welcome Screen
       OPEN_LOGIN: () => ({}),
-      OPEN_SETTINGS: () => ({}),
-      REVIEW_RESUME: () => ({}),
-      REVIEW_START: () => ({}),
-      REVIEW_PAUSE: () => ({}),
+
+      // Onboarding Screen
       CONTINUE: () => ({}),
-      LOGIN: () => ({}),
-      GET_STARTED: () => ({}),
-      WELCOME_START: () => ({}),
+
+      // Home Screen
+      START_REVIEW: () => ({}),
+      OPEN_SETTINGS: () => ({}),
+
+      // Login Screen
+      SUBMIT_LOGIN: ({ email }: { email: string }) => ({ email }),
+
+      // Settings Screen
+      LOGOUT: () => ({}),
+
+      // Review Screen
+      PAUSE_REVIEW: () => ({}),
+
+      // Shared
+      START: () => ({}),
+      BACK: () => ({}),
     },
   }
 );
@@ -37,13 +49,13 @@ export const appMachine = appModel.createMachine(
             invoke: {
               src: "bootstrapApp",
               onDone: "Success",
-              onError: "Failure",
+              onError: "Error",
             },
           },
           Success: {
             type: "final" as const,
           },
-          Failure: {
+          Error: {
             type: "final" as const,
           },
         },
@@ -63,12 +75,39 @@ export const appMachine = appModel.createMachine(
           target: "Home",
         },
         on: {
-          REVIEW_PAUSE: {
+          PAUSE_REVIEW: {
             target: "Home",
           },
         },
       },
       Login: {
+        initial: "Idle",
+        states: {
+          Idle: {
+            on: {
+              SUBMIT_LOGIN: {
+                target: "Loading",
+              },
+              BACK: {
+                target: "Done",
+              },
+            },
+          },
+          Loading: {
+            invoke: {
+              src: "loginUser",
+              onDone: {
+                target: "Done",
+                actions: "assignUserId",
+              },
+              onError: "Error",
+            },
+          },
+          Error: {},
+          Done: {
+            type: "final" as const,
+          },
+        },
         onDone: [
           {
             target: "Home",
@@ -81,10 +120,7 @@ export const appMachine = appModel.createMachine(
       },
       Home: {
         on: {
-          REVIEW_START: {
-            target: "Review",
-          },
-          REVIEW_RESUME: {
+          START_REVIEW: {
             target: "Review",
           },
           OPEN_SETTINGS: {
@@ -93,16 +129,24 @@ export const appMachine = appModel.createMachine(
         },
       },
       Settings: {
+        initial: "Idle",
         onDone: {
           target: "Home",
         },
         states: {
-          Idle: {},
-          Loading: {},
+          Idle: {
+            on: {
+              BACK: "Done",
+            },
+          },
+          Done: {
+            type: "final" as const,
+          },
         },
         on: {
           LOGOUT: {
             target: "Welcome",
+            actions: "clearUserId",
           },
         },
       },
@@ -112,39 +156,93 @@ export const appMachine = appModel.createMachine(
           Loading: {
             invoke: {
               src: "createNewUser",
-              onDone: "Idle",
+              onDone: "Success",
               onError: "Error",
             },
           },
-          Idle: {},
           Error: {},
-        },
-        on: {
-          CONTINUE: {
-            target: "Home",
+          Success: {
+            always: {
+              target: "Idle",
+            },
           },
+          Idle: {
+            on: {
+              CONTINUE: {
+                target: "Complete",
+              },
+            },
+          },
+          Complete: {
+            type: "final" as const,
+          },
+        },
+        onDone: {
+          target: "Home",
         },
       },
       Welcome: {
+        initial: "Idle",
+        states: {
+          Idle: {
+            on: {
+              START: {
+                target: "Complete",
+              },
+            },
+          },
+          Complete: {
+            type: "final" as const,
+          },
+        },
         on: {
-          LOGIN: {
+          OPEN_LOGIN: {
             target: "Login",
           },
-          GET_STARTED: {
-            target: "Onboarding",
-          },
+        },
+        onDone: {
+          target: "Onboarding",
         },
       },
     },
   },
   {
+    actions: {
+      assignUserId: appModel.assign({
+        userId: (context, event) => "123", // TODO pull out
+      }),
+      clearUserId: appModel.assign({
+        userId: (context, event) => undefined,
+      }),
+    },
     guards: {
       isLoggedIn: (context) => {
         return !!context.userId;
       },
     },
+    services: {
+      bootstrapApp: () => {
+        return new Promise<BootstrapProps>((resolve, reject) => {
+          resolve({ userId: "123" });
+        });
+      },
+      createNewUser: () => {
+        return Promise.resolve<User>({ id: "123" });
+      },
+      loginUser: () => {
+        return Promise.resolve<User>({ id: "123" });
+      },
+    },
   }
 );
+
+interface User {
+  id: string;
+}
+
+interface BootstrapProps {
+  userId?: string;
+}
 
 export type AppContext = ContextFrom<typeof appModel>;
 export type AppEvent = EventFrom<typeof appModel>;

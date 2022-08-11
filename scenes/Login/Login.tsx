@@ -2,37 +2,36 @@ import { useSelector } from "@xstate/react";
 import React, { Fragment, memo, useCallback, useContext } from "react";
 import { Button, StyleSheet, Text, View } from "react-native";
 import { AppServiceContext } from "../../AppService";
+import { appModel } from "../../appMachine";
 
-const Login = memo(() => {
+const LoginScene = memo(() => {
   const appService = useContext(AppServiceContext);
-  const appState = useSelector(appService, (state) => state.value);
+  const appState = useSelector(appService, (state) => state);
 
-  const handleSubmit = useCallback(() => {
-    appService.send("LOGIN_SUCCESS");
-  }, [appService]);
-
-  const handleBack = useCallback(() => {
-    appService.send("NAVIGATE_BACK");
-  }, [appService]);
-
-  if (appState !== "Login") {
+  if (!appState.matches("Login")) {
     return <Fragment />;
   }
 
-  return <LoginComponent onPressBack={handleBack} onSubmit={handleSubmit} />;
+  return <LoginComponent />;
 });
 
-interface LoginComponentProps {
-  onPressBack: () => void;
-  onSubmit: () => void;
-}
+function LoginComponent() {
+  const appService = useContext(AppServiceContext);
 
-function LoginComponent({ onPressBack, onSubmit }: LoginComponentProps) {
+  const handleSubmit = useCallback(() => {
+    const email = "foo@bar.com";
+    appService.send(appModel.events.SUBMIT_LOGIN({ email }));
+  }, [appService]);
+
+  const handleBack = useCallback(() => {
+    appService.send(appModel.events.BACK());
+  }, [appService]);
+
   return (
     <View style={styles.container}>
-      <Text>Welcome</Text>
-      <Button onPress={onPressBack} title="Back" />
-      <Button onPress={onSubmit} title="Submit" />
+      <Text>Login</Text>
+      <Button onPress={handleBack} title="Back" />
+      <Button onPress={handleSubmit} title="Submit" />
     </View>
   );
 }
@@ -46,4 +45,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export { Login };
+export { LoginScene };

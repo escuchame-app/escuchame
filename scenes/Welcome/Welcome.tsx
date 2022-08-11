@@ -1,51 +1,41 @@
 import { useSelector } from "@xstate/react";
 import React, { Fragment, memo, useCallback, useContext } from "react";
 import { Button, StyleSheet, Text, View } from "react-native";
+import { appModel } from "../../appMachine";
 import { AppServiceContext } from "../../AppService";
 
-const Welcome = memo(() => {
+const WelcomeScene = memo(() => {
   const appService = useContext(AppServiceContext);
-  const appState = useSelector(appService, (state) => state.value);
+  const appState = useSelector(appService, (state) => state);
 
-  const handleGetStarted = useCallback(() => {
-    appService.send("GET_STARTED");
-  }, [appService]);
-
-  const handleLogin = useCallback(() => {
-    appService.send("LOGIN");
-  }, [appService]);
-
-  if (appState !== "Welcome") {
+  if (!appState.matches("Welcome")) {
     return <Fragment />;
   }
 
-  return (
-    <WelcomeComponent
-      onPressGetStarted={handleGetStarted}
-      onPressLogin={handleLogin}
-    />
-  );
-
-  return <Fragment />;
+  return <WelcomeComponent />;
 });
 
-interface WelcomeComponentProps {
-  onPressGetStarted: () => void;
-  onPressLogin: () => void;
-}
+const WelcomeComponent = memo(() => {
+  const appService = useContext(AppServiceContext);
 
-function WelcomeComponent({
-  onPressGetStarted,
-  onPressLogin,
-}: WelcomeComponentProps) {
+  const handleGetStarted = useCallback(() => {
+    const event = appModel.events.START();
+    appService.send(event);
+  }, [appService]);
+
+  const handleLogin = useCallback(() => {
+    const event = appModel.events.OPEN_LOGIN();
+    appService.send(event);
+  }, [appService]);
+
   return (
     <View style={styles.container}>
       <Text>Welcome</Text>
-      <Button onPress={onPressGetStarted} title="Get Started" />
-      <Button onPress={onPressLogin} title="Login" />
+      <Button onPress={handleGetStarted} title="Get Started" />
+      <Button onPress={handleLogin} title="Login" />
     </View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   container: {
@@ -56,4 +46,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export { Welcome };
+export { WelcomeScene };
