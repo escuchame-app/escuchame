@@ -39,6 +39,7 @@ export const appModel = createModel(
 export const appMachine = appModel.createMachine(
   {
     id: "AppMachine",
+    // tsTypes: {} as import("./appMachine.typegen").Typegen0,
     initial: "Init",
     context: appModel.initialContext,
     states: {
@@ -48,7 +49,12 @@ export const appMachine = appModel.createMachine(
           Loading: {
             invoke: {
               src: "bootstrapApp",
-              onDone: "Success",
+              onDone: {
+                target: "Success",
+                actions: assign({
+                  userId: (context, event) => event.data.userId,
+                }),
+              },
               onError: "Error",
             },
           },
@@ -155,8 +161,10 @@ export const appMachine = appModel.createMachine(
         states: {
           Loading: {
             invoke: {
-              src: "createNewUser",
-              onDone: "Success",
+              src: "registerUser",
+              onDone: {
+                target: "Success",
+              },
               onError: "Error",
             },
           },
@@ -208,9 +216,10 @@ export const appMachine = appModel.createMachine(
   },
   {
     actions: {
-      assignUserId: appModel.assign({
-        userId: (context, event) => "123", // TODO pull out
-      }),
+      assignUserId: (context, event) => {
+        const user = event.data as User;
+        appModel.assign({ userId: user.id });
+      },
       clearUserId: appModel.assign({
         userId: (context, event) => undefined,
       }),
@@ -221,28 +230,18 @@ export const appMachine = appModel.createMachine(
       },
     },
     services: {
-      bootstrapApp: () => {
-        return new Promise<BootstrapProps>((resolve, reject) => {
-          resolve({ userId: "123" });
-        });
+      bootstrapApp: (context, event) => {
+        return Promise.resolve({ userId: undefined });
       },
-      createNewUser: () => {
-        return Promise.resolve<User>({ id: "123" });
+      registerUser: (context, event) => {
+        return Promise.resolve({ id: "123" });
       },
-      loginUser: () => {
-        return Promise.resolve<User>({ id: "123" });
+      loginUser: (context, event) => {
+        return Promise.resolve({ id: "123" });
       },
     },
   }
 );
-
-interface User {
-  id: string;
-}
-
-interface BootstrapProps {
-  userId?: string;
-}
 
 export type AppContext = ContextFrom<typeof appModel>;
 export type AppEvent = EventFrom<typeof appModel>;
