@@ -32,9 +32,6 @@ export const appModel = createModel(
       // Settings Screen
       LOGOUT: () => ({}),
 
-      // Review Screen
-      PAUSE_REVIEW: () => ({}),
-
       // Shared
       START: () => ({}),
       BACK: () => ({}),
@@ -87,7 +84,7 @@ export const appMachine = appModel.createMachine(
           target: "Home",
         },
         on: {
-          PAUSE_REVIEW: {
+          BACK: {
             target: "Home",
           },
         },
