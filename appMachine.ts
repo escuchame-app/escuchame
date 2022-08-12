@@ -1,3 +1,9 @@
+import {
+  getAuth,
+  onAuthStateChanged,
+  signInAnonymously,
+  signOut,
+} from "firebase/auth";
 import { assign, ContextFrom, EventFrom, ActorRefFrom } from "xstate";
 import { createModel } from "xstate/lib/model";
 
@@ -152,7 +158,12 @@ export const appMachine = appModel.createMachine(
         on: {
           LOGOUT: {
             target: "Welcome",
-            actions: "clearUserId",
+            actions: [
+              "logoutUser",
+              assign({
+                userId: (context, event) => undefined,
+              }),
+            ],
           },
         },
       },
@@ -164,6 +175,9 @@ export const appMachine = appModel.createMachine(
               src: "registerUser",
               onDone: {
                 target: "Success",
+                actions: assign({
+                  userId: (context, event) => event.data.user.uid,
+                }),
               },
               onError: "Error",
             },
@@ -215,26 +229,30 @@ export const appMachine = appModel.createMachine(
     },
   },
   {
-    actions: {
-      assignUserId: (context, event) => {
-        const user = event.data as User;
-        appModel.assign({ userId: user.id });
-      },
-      clearUserId: appModel.assign({
-        userId: (context, event) => undefined,
-      }),
-    },
     guards: {
       isLoggedIn: (context) => {
         return !!context.userId;
       },
     },
+    actions: {
+      logoutUser: (context, event) => {
+        const auth = getAuth();
+        return signOut(auth);
+      },
+    },
     services: {
-      bootstrapApp: (context, event) => {
-        return Promise.resolve({ userId: undefined });
+      bootstrapApp: () => {
+        return new Promise((resolve, reject) => {
+          const auth = getAuth();
+          const unsubscribe = onAuthStateChanged(auth, (user) => {
+            resolve({ userId: user?.uid });
+            unsubscribe();
+          });
+        });
       },
       registerUser: (context, event) => {
-        return Promise.resolve({ id: "123" });
+        const auth = getAuth();
+        return signInAnonymously(auth);
       },
       loginUser: (context, event) => {
         return Promise.resolve({ id: "123" });

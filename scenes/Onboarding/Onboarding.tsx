@@ -16,6 +16,7 @@ const OnboardingScene = memo(() => {
 
 function OnboardingComponent() {
   const appService = useContext(AppServiceContext);
+  const state = useSelector(appService, (state) => state);
 
   const handleContinue = useCallback(() => {
     appService.send("CONTINUE");
@@ -24,7 +25,9 @@ function OnboardingComponent() {
   return (
     <View style={styles.container}>
       <Text>Onboarding</Text>
-      <Button onPress={handleContinue} title="Continue" />
+      {state.matches("Onboarding.Idle") && (
+        <Button onPress={handleContinue} title="Continue" />
+      )}
     </View>
   );
 }

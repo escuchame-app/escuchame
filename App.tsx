@@ -1,6 +1,5 @@
 import { useInterpret } from "@xstate/react";
 import { getApps, initializeApp } from "firebase/app";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { StyleSheet, View } from "react-native";
 import { appMachine } from "./appMachine";
 import { AppServiceContext } from "./AppService";
