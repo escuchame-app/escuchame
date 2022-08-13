@@ -1,7 +1,6 @@
 import { useInterpret, useSelector } from "@xstate/react";
 import React, { FC, Fragment, memo, useCallback, useContext } from "react";
 import { Button, StyleSheet, Text, View } from "react-native";
-import { appModel } from "../../appMachine";
 import { AppServiceContext } from "../../AppService";
 import { reviewMachine, reviewModel } from "./reviewMachine";
 import { ReviewServiceContext } from "./ReviewService";
@@ -24,6 +23,9 @@ const ReviewScene = memo(() => {
 
 const ReviewComponent: FC = () => {
   const reviewService = useContext(ReviewServiceContext);
+  const isSessionActive = useSelector(reviewService, (state) =>
+    state.matches({ Session: "Active" })
+  );
 
   const handlePause = useCallback(() => {
     reviewService.send(reviewModel.events.PAUSE());
@@ -38,10 +40,13 @@ const ReviewComponent: FC = () => {
   return (
     <View style={styles.container}>
       <Text>Review</Text>
-      <Text>Hola my name is Juan</Text>
-      <Text>Hello my name is Jon</Text>
-      <Button onPress={handleIncorrect} title="Incorrect" />
-      <Button onPress={handleCorrect} title="Correct" />
+      {isSessionActive && <Text>Active</Text>}
+      <View>
+        <Text>Hola my name is Juan</Text>
+        <Text>Hello my name is Jon</Text>
+        <Button onPress={handleIncorrect} title="Incorrect" />
+        <Button onPress={handleCorrect} title="Correct" />
+      </View>
       <Button onPress={handlePause} title="Pause" />
     </View>
   );
