@@ -2,7 +2,7 @@ import { useInterpret, useSelector } from "@xstate/react";
 import React, { FC, Fragment, memo, useCallback, useContext } from "react";
 import { Button, StyleSheet, Text, View } from "react-native";
 import { AppServiceContext } from "../../AppService";
-import { reviewMachine, reviewModel } from "./reviewMachine";
+import { reviewMachine, reviewModel, ReviewState } from "./reviewMachine";
 import { ReviewServiceContext } from "./ReviewService";
 
 const ReviewScene = memo(() => {
@@ -39,11 +39,9 @@ const ReviewComponent: FC = () => {
 
   return (
     <View style={styles.container}>
-      <Text>Review</Text>
       {isSessionActive && <Text>Active</Text>}
+      <Cards />
       <View>
-        <Text>Hola my name is Juan</Text>
-        <Text>Hello my name is Jon</Text>
         <Button onPress={handleIncorrect} title="Incorrect" />
         <Button onPress={handleCorrect} title="Correct" />
       </View>
@@ -51,6 +49,26 @@ const ReviewComponent: FC = () => {
     </View>
   );
 };
+
+const Cards = () => {
+  const reviewService = useContext(ReviewServiceContext);
+  const cards = useSelector(
+    reviewService,
+    (state: ReviewState) => state.context.cards
+  );
+  console.log("hi!", cards);
+
+  return <Fragment />;
+};
+
+// const Card = ({ cardService }) => {
+//   return (
+//     <View>
+//       <Text>Hola my name is Juan</Text>
+//       <Text>Hello my name is Jon</Text>
+//     </View>
+//   );
+// };
 
 const styles = StyleSheet.create({
   container: {

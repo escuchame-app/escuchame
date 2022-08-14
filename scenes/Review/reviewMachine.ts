@@ -1,11 +1,21 @@
-import { ContextFrom, EventFrom, ActorRefFrom } from "xstate";
+import {
+  ContextFrom,
+  EventFrom,
+  ActorRefFrom,
+  StateFrom,
+  assign,
+  DoneInvokeEvent,
+} from "xstate";
 import { createModel } from "xstate/lib/model";
+import { Card } from "./cardMachine";
 
 // Keep in sync with web ui editor @
 // https://stately.ai/viz/4a3d93f0-fbad-4c1d-9dce-312d81f37fff
 
 export const reviewModel = createModel(
-  {},
+  {
+    cards: [] as Card[],
+  },
   {
     events: {
       REVEAL: () => ({}),
@@ -13,6 +23,7 @@ export const reviewModel = createModel(
       RESUME: () => ({}),
       PAUSE: () => ({}),
       END: () => ({}),
+      NEXT: ({ cardId }: { cardId: string }) => ({ cardId }),
       REFRESH: () => ({}),
     },
   }
@@ -23,43 +34,17 @@ export const reviewMachine = reviewModel.createMachine(
     id: "ReviewMachine",
     type: "parallel",
     states: {
-      Current: {
-        initial: "Front",
-        states: {
-          Front: {
-            on: {
-              REVEAL: "Back",
-            },
-          },
-          Back: {
-            on: {
-              SUBMIT_RESPONSE: "Out",
-            },
-          },
-          Out: {},
-        },
-      },
-      OnDeck: {
-        initial: "Preload",
-        states: {
-          Preload: {
-            invoke: {
-              src: "preloadCard",
-              onDone: "Loaded",
-              onError: "Error",
-            },
-          },
-          Loaded: {},
-          Error: {},
-        },
-      },
+      // this should be spawned dyanmically..
       Session: {
         initial: "Loading",
         states: {
           Loading: {
             invoke: {
               src: "getSession",
-              onDone: "Active",
+              onDone: {
+                target: "Active",
+                actions: "setSessionId",
+              },
               onError: "Error",
             },
           },
@@ -99,8 +84,12 @@ export const reviewMachine = reviewModel.createMachine(
         states: {
           Loading: {
             invoke: {
-              src: "getNextCards",
-              onDone: "Loaded",
+              id: "getNextCards",
+              src: (context) => getNextCards(),
+              onDone: {
+                target: "Loaded",
+                actions: "setCards",
+              },
               onError: "Error",
             },
           },
@@ -115,17 +104,25 @@ export const reviewMachine = reviewModel.createMachine(
     },
   },
   {
+    actions: {
+      setCards: assign({
+        cards: (context, event: any) => event.data,
+      }),
+    },
     guards: {
       isSessionFinished: (context, event) => false,
     },
     services: {
       getSession: (context, event) => Promise.resolve({ id: "1" }),
-      getNextCards: (context, event) =>
-        Promise.resolve([{ id: "1" }, { id: "2" }]),
     },
   }
 );
 
+const getNextCards = async (): Promise<Card[]> => {
+  return [{ id: "1" }, { id: "2" }];
+};
+
 export type ReviewContext = ContextFrom<typeof reviewModel>;
 export type ReviewEvent = EventFrom<typeof reviewModel>;
 export type ReviewActor = ActorRefFrom<typeof reviewMachine>;
+export type ReviewState = StateFrom<typeof reviewMachine>;
