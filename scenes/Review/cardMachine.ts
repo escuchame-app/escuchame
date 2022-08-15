@@ -1,4 +1,4 @@
-import { ContextFrom, EventFrom, ActorRefFrom, StateFrom } from "xstate";
+import { ActorRefFrom, StateFrom } from "xstate";
 import { createModel } from "xstate/lib/model";
 import { Card } from "./types";
 
@@ -27,6 +27,7 @@ const cardModel = createModel(
     events: {
       REVEAL: () => ({}),
       PLAY: () => ({}),
+      BUFFER_AUDIO: () => ({}),
     },
   }
 );
@@ -36,31 +37,58 @@ const cardMachine = cardModel.createMachine(
     id: "CardMachine",
     type: "parallel",
     states: {
-      Audio: {
-        initial: "Loading",
+      IsRevealed: {
+        initial: "No",
         states: {
-          Loading: {
-            invoke: {
-              src: "loadAudio",
-              onDone: "Idle",
+          No: {
+            on: {
+              REVEAL: "Yes",
             },
           },
+          Yes: {},
+        },
+      },
+      Audio: {
+        initial: "Loading",
+        entry: "loadAudio",
+        states: {
           Playing: {
             invoke: {
               src: "playAudio",
               onDone: "Idle",
+              onError: "Error",
+            },
+            on: {
+              BUFFER_AUDIO: "Buffering",
+            },
+          },
+          Buffering: {
+            initial: "Loading",
+            onDone: "Playing",
+            states: {
+              Loading: {
+                invoke: {
+                  src: "loadAudio",
+                  onDone: "Loaded",
+                  onError: "Error",
+                },
+              },
+              Loaded: {
+                type: "final" as const,
+              },
+              Error: {},
             },
           },
           Idle: {},
+          Error: {},
         },
       },
     },
   },
   {
-    guards: {},
     services: {
-      loadAudio: () => Promise.resolve(),
-      playAudio: () => Promise.resolve(),
+      loadAudio: (context) => Promise.resolve("1234"),
+      playAudio: (context) => Promise.resolve("45678"),
     },
   }
 );

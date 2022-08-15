@@ -1,9 +1,7 @@
-import { FC, Fragment, useContext } from "react";
-import { ReviewState } from "./reviewMachine";
-import { useInterpret, useMachine, useSelector } from "@xstate/react";
-import { CardActorRef } from "./cardMachine";
-import { ActorRef } from "xstate/lib/types";
+import { useSelector } from "@xstate/react";
+import { FC } from "react";
 import { Text, View } from "react-native";
+import { CardActorRef } from "./cardMachine";
 
 interface Props {
   actorRef: CardActorRef;
@@ -11,13 +9,6 @@ interface Props {
 
 export const Card: FC<Props> = ({ actorRef }) => {
   const cardData = useSelector(actorRef, (state) => state.context.card);
-  console.log("cd", cardData);
-  // useSelector(actorRef, (state) => state.)
-  //   const reviewService = useInterpret(actorRef);
-  //   const currentCardRef = useSelector(
-  //     reviewService,
-  //     (state: ReviewState) => state.context.currentCard
-  //   );
 
   return (
     <View>
