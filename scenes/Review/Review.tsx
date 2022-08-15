@@ -1,9 +1,11 @@
-import { useInterpret, useSelector } from "@xstate/react";
+import { useInterpret, useMachine, useSelector } from "@xstate/react";
 import React, { FC, Fragment, memo, useCallback, useContext } from "react";
 import { Button, StyleSheet, Text, View } from "react-native";
 import { AppServiceContext } from "../../AppService";
 import { reviewMachine, reviewModel, ReviewState } from "./reviewMachine";
 import { ReviewServiceContext } from "./ReviewService";
+import { Card } from "./Card";
+import { CardActorRef } from "./cardMachine";
 
 const ReviewScene = memo(() => {
   const appService = useContext(AppServiceContext);
@@ -21,26 +23,33 @@ const ReviewScene = memo(() => {
   );
 });
 
+// TODO
+// 1. if cards.length - index < 2, then fetch more cards and add them to the end
+// 2. everytime we submit a response, bump up the index by one
+
 const ReviewComponent: FC = () => {
   const reviewService = useContext(ReviewServiceContext);
   const isSessionActive = useSelector(reviewService, (state) =>
     state.matches({ Session: "Active" })
   );
+  const currentCardRef = useSelector(
+    reviewService,
+    (state: ReviewState) => state.context.currentCardRef
+  );
+  console.log({ currentCardRef });
 
   const handlePause = useCallback(() => {
-    reviewService.send(reviewModel.events.PAUSE());
+    // reviewService.send(reviewModel.events.PAUSE());
   }, [reviewService]);
-  const handleCorrect = useCallback(() => {
-    reviewService.send(reviewModel.events.SUBMIT_RESPONSE(true));
-  }, [reviewService]);
-  const handleIncorrect = useCallback(() => {
-    reviewService.send(reviewModel.events.SUBMIT_RESPONSE(false));
-  }, [reviewService]);
+  const handleCorrect = useCallback(() => {}, [reviewService]);
+  const handleIncorrect = useCallback(() => {}, [reviewService]);
 
   return (
     <View style={styles.container}>
       {isSessionActive && <Text>Active</Text>}
-      <Cards />
+      {currentCardRef && (
+        <Card key={currentCardRef.id} actorRef={currentCardRef} />
+      )}
       <View>
         <Button onPress={handleIncorrect} title="Incorrect" />
         <Button onPress={handleCorrect} title="Correct" />
@@ -49,26 +58,6 @@ const ReviewComponent: FC = () => {
     </View>
   );
 };
-
-const Cards = () => {
-  const reviewService = useContext(ReviewServiceContext);
-  const cards = useSelector(
-    reviewService,
-    (state: ReviewState) => state.context.cards
-  );
-  console.log("hi!", cards);
-
-  return <Fragment />;
-};
-
-// const Card = ({ cardService }) => {
-//   return (
-//     <View>
-//       <Text>Hola my name is Juan</Text>
-//       <Text>Hello my name is Jon</Text>
-//     </View>
-//   );
-// };
 
 const styles = StyleSheet.create({
   container: {
