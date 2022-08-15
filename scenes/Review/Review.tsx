@@ -23,20 +23,14 @@ const ReviewScene = memo(() => {
   );
 });
 
-// TODO
-// 1. if cards.length - index < 2, then fetch more cards and add them to the end
-// 2. everytime we submit a response, bump up the index by one
-
 const ReviewComponent: FC = () => {
   const reviewService = useContext(ReviewServiceContext);
-  const isSessionActive = useSelector(reviewService, (state) =>
-    state.matches({ Session: "Active" })
-  );
   const currentCardRef = useSelector(
     reviewService,
     (state: ReviewState) => state.context.currentCardRef
   );
-  console.log({ currentCardRef });
+  const ctx = useSelector(reviewService, (state) => state.context);
+  console.log({ctx})
 
   const handlePause = useCallback(() => {
     // reviewService.send(reviewModel.events.PAUSE());
@@ -46,7 +40,6 @@ const ReviewComponent: FC = () => {
 
   return (
     <View style={styles.container}>
-      {isSessionActive && <Text>Active</Text>}
       {currentCardRef && (
         <Card key={currentCardRef.id} actorRef={currentCardRef} />
       )}
