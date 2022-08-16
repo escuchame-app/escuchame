@@ -29,25 +29,13 @@ const ReviewComponent: FC = () => {
     reviewService,
     (state: ReviewState) => state.context.currentCardRef
   );
-  const ctx = useSelector(reviewService, (state) => state.context);
-  console.log({ctx})
-
-  const handlePause = useCallback(() => {
-    // reviewService.send(reviewModel.events.PAUSE());
-  }, [reviewService]);
-  const handleCorrect = useCallback(() => {}, [reviewService]);
-  const handleIncorrect = useCallback(() => {}, [reviewService]);
+  console.log({ currentCardRef });
 
   return (
     <View style={styles.container}>
       {currentCardRef && (
-        <Card key={currentCardRef.id} actorRef={currentCardRef} />
+        <Card key={currentCardRef.id} cardActorRef={currentCardRef} />
       )}
-      <View>
-        <Button onPress={handleIncorrect} title="Incorrect" />
-        <Button onPress={handleCorrect} title="Correct" />
-      </View>
-      <Button onPress={handlePause} title="Pause" />
     </View>
   );
 };

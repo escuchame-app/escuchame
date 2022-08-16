@@ -8,6 +8,7 @@ import {
   spawn,
   actions,
 } from "xstate";
+import { send } from "xstate/lib/actions";
 import { createModel } from "xstate/lib/model";
 import { CardActorRef, createCardMachine } from "./cardMachine";
 import { SessionActorRef, createSessionMachine } from "./sessionMachine";
@@ -42,14 +43,9 @@ export const reviewMachine = reviewModel.createMachine(
           onDone: {
             target: "Playing",
             actions: assign({
-              sessionRef: (
-                context,
-                event: DoneInvokeEvent<StartSessionResponse>
-              ) => spawn(createSessionMachine(event.data.session)),
-              cardQueue: (
-                context,
-                event: DoneInvokeEvent<StartSessionResponse>
-              ) =>
+              sessionRef: (_, event: DoneInvokeEvent<StartSessionResponse>) =>
+                spawn(createSessionMachine(event.data.session)),
+              cardQueue: (_, event: DoneInvokeEvent<StartSessionResponse>) =>
                 event.data.cards.map((card) => spawn(createCardMachine(card))),
             }),
           },
@@ -57,7 +53,18 @@ export const reviewMachine = reviewModel.createMachine(
       },
       Error: {},
       Playing: {
-        entry: ["setNextCard"],
+        entry: ["setNextCard", "playCurrentCard"],
+        on: {
+          NEXT: [
+            {
+              target: "Complete",
+              cond: "isSessionComplete",
+            },
+            {
+              target: "Playing",
+            },
+          ],
+        },
       },
       Complete: {},
     },
@@ -65,12 +72,18 @@ export const reviewMachine = reviewModel.createMachine(
   {
     actions: {
       setNextCard: assign({
-        currentCardRef: (context, event) => {
+        currentCardRef: (context) => {
           return context.cardQueue.shift();
         },
       }),
+      playCurrentCard: send({
+        type: "PLAY",
+        to: (context: ReviewContext) => context.currentCardRef,
+      }),
     },
-    guards: {},
+    guards: {
+      isSessionComplete: (context) => false,
+    },
   }
 );
 

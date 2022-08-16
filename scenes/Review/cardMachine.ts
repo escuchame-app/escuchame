@@ -1,6 +1,12 @@
-import { ActorRefFrom, StateFrom } from "xstate";
+import { ActorRefFrom, spawn, StateFrom } from "xstate";
 import { createModel } from "xstate/lib/model";
+import { noop } from "../../utils/misc";
 import { Card } from "./types";
+import { Audio, InterruptionModeIOS } from "expo-av";
+import {
+  AudioTrackActorRef,
+  createAudioTrackMachine,
+} from "./audioTrackMachine";
 
 // Keep in sync with web ui editor @
 // https://stately.ai/viz/d92068c1-9fa7-4f82-a7ca-b39165c873eb
@@ -19,83 +25,96 @@ import { Card } from "./types";
 // Toggles between off screen left, visible, off screen right
 // Toggles between front and back
 
-const cardModel = createModel(
+export const cardModel = createModel(
   {
     card: {} as Card,
+    audioTrackRef: {} as AudioTrackActorRef,
   },
   {
     events: {
+      MAKE_ACTIVE: () => ({}),
       REVEAL: () => ({}),
       PLAY: () => ({}),
-      BUFFER_AUDIO: () => ({}),
+      SUBMIT_RESPONSE: (correct: boolean) => ({ correct }),
     },
   }
 );
+
+// Next step: send the "NEXT" event to
+// the parent machine, which responds to it
+// and sets the next card.
 
 const cardMachine = cardModel.createMachine(
   {
     id: "CardMachine",
-    type: "parallel",
+    initial: "Queued",
+    entry: cardModel.assign({
+      audioTrackRef: (context) =>
+        spawn(createAudioTrackMachine(context.card.audioURL)),
+    }),
     states: {
-      IsRevealed: {
-        initial: "No",
-        states: {
-          No: {
-            on: {
-              REVEAL: "Yes",
-            },
-          },
-          Yes: {},
+      Queued: {
+        on: {
+          MAKE_ACTIVE: "Reviewing",
         },
       },
-      Audio: {
-        initial: "Loading",
-        entry: "loadAudio",
+      Reviewing: {
+        initial: "Prompt",
         states: {
-          Playing: {
-            invoke: {
-              src: "playAudio",
-              onDone: "Idle",
-              onError: "Error",
-            },
+          Prompt: {
             on: {
-              BUFFER_AUDIO: "Buffering",
+              REVEAL: "Answer",
             },
           },
-          Buffering: {
-            initial: "Loading",
-            onDone: "Playing",
-            states: {
-              Loading: {
-                invoke: {
-                  src: "loadAudio",
-                  onDone: "Loaded",
-                  onError: "Error",
-                },
-              },
-              Loaded: {
-                type: "final" as const,
-              },
-              Error: {},
-            },
-          },
-          Idle: {},
-          Error: {},
+          Answer: {},
         },
+      },
+      Complete: {
+        type: "final" as const,
       },
     },
   },
   {
-    services: {
-      loadAudio: (context) => Promise.resolve("1234"),
-      playAudio: (context) => Promise.resolve("45678"),
-    },
+    services: {},
   }
 );
+
+// const audioTrackMachine = audioTrackModel.createMachine({
+//       // This should probably be it's own spawned machine..
+//       Audio: {
+//         initial: "Idle",
+//         // TODO when do we call loadAudio?
+//         states: {
+//           Playing: {
+//             invoke: {
+//               src: "playAudio",
+//               onDone: "Finished",
+//               onError: "Error",
+//             },
+//           },
+//           Error: {},
+//           Idle: {
+//             on: {
+//               PLAY: "Playing",
+//             },
+//           },
+//           Finished: {
+//             type: "final" as const,
+//           },
+//         },
+//       });
+
+Audio.setAudioModeAsync({
+  playsInSilentModeIOS: true,
+  interruptionModeIOS: InterruptionModeIOS.DuckOthers,
+}).then(noop);
 
 export type CardState = StateFrom<typeof cardMachine>;
 
 export const createCardMachine = (card: Card) =>
-  cardMachine.withContext({ card });
+  cardMachine.withContext({
+    card,
+    audioTrackRef: {} as AudioTrackActorRef /* TS hack */,
+  });
 
 export type CardActorRef = ActorRefFrom<typeof cardMachine>;
