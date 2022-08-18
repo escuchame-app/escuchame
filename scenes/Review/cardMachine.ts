@@ -7,6 +7,7 @@ import {
   AudioTrackActorRef,
   createAudioTrackMachine,
 } from "./audioTrackMachine";
+import { sendParent } from "xstate/lib/actions";
 
 // Keep in sync with web ui editor @
 // https://stately.ai/viz/d92068c1-9fa7-4f82-a7ca-b39165c873eb
@@ -32,8 +33,8 @@ export const cardModel = createModel(
   },
   {
     events: {
-      MAKE_ACTIVE: () => ({}),
       REVEAL: () => ({}),
+      SHOW: () => ({}),
       PLAY: () => ({}),
       SUBMIT_RESPONSE: (correct: boolean) => ({ correct }),
     },
@@ -55,7 +56,7 @@ const cardMachine = cardModel.createMachine(
     states: {
       Queued: {
         on: {
-          MAKE_ACTIVE: "Reviewing",
+          SHOW: "Reviewing",
         },
       },
       Reviewing: {
@@ -66,8 +67,16 @@ const cardMachine = cardModel.createMachine(
               REVEAL: "Answer",
             },
           },
-          Answer: {},
+          Answer: {
+            on: {
+              SUBMIT_RESPONSE: "Submitted",
+            },
+          },
+          Submitted: {
+            type: "final" as const,
+          },
         },
+        onDone: "Complete",
       },
       Complete: {
         type: "final" as const,

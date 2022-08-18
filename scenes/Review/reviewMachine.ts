@@ -20,7 +20,7 @@ import { Card, Session } from "./types";
 export const reviewModel = createModel(
   {
     cardQueue: [] as CardActorRef[],
-    currentCardRef: undefined as CardActorRef | undefined,
+    currentIndex: 0,
     sessionRef: undefined as SessionActorRef | undefined,
   },
   {
@@ -53,7 +53,29 @@ export const reviewMachine = reviewModel.createMachine(
       },
       Error: {},
       Playing: {
-        entry: ["setNextCard", "playCurrentCard"],
+        invoke: {
+          id: "showNextCard",
+          src: (context, event) =>
+            new Promise((resolve, reject) => {
+              const nextCard = context.cardQueue[context.currentIndex];
+
+              if (!nextCard) {
+                throw new Error("TS assert: no cards in queue");
+              }
+
+              nextCard.send("SHOW");
+              const sub = nextCard.subscribe((state) => {
+                if (state.event.type === "SUBMIT_RESPONSE") {
+                  resolve(undefined);
+                  sub.unsubscribe();
+                }
+              });
+            }),
+          onDone: {
+            target: "Playing",
+          },
+          onError: "Error",
+        },
         on: {
           NEXT: [
             {
@@ -71,15 +93,21 @@ export const reviewMachine = reviewModel.createMachine(
   },
   {
     actions: {
-      setNextCard: assign({
-        currentCardRef: (context) => {
-          return context.cardQueue.shift();
+      showNextCard: send(
+        {
+          type: "SHOW",
         },
-      }),
-      playCurrentCard: send({
-        type: "PLAY",
-        to: (context: ReviewContext) => context.currentCardRef,
-      }),
+        {
+          to: (context: ReviewContext) => {
+            console.log("HI!!!0");
+            const ref = context.cardQueue.shift();
+            if (!ref) {
+              throw new Error("no cards in queue!, shouldnt happen");
+            }
+            return ref;
+          },
+        }
+      ),
     },
     guards: {
       isSessionComplete: (context) => false,

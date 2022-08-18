@@ -25,17 +25,16 @@ const ReviewScene = memo(() => {
 
 const ReviewComponent: FC = () => {
   const reviewService = useContext(ReviewServiceContext);
-  const currentCardRef = useSelector(
+  const cardQueue = useSelector(
     reviewService,
-    (state: ReviewState) => state.context.currentCardRef
+    (state: ReviewState) => state.context.cardQueue
   );
-  console.log({ currentCardRef });
 
   return (
     <View style={styles.container}>
-      {currentCardRef && (
-        <Card key={currentCardRef.id} cardActorRef={currentCardRef} />
-      )}
+      {cardQueue.map((card) => (
+        <Card key={card.id} cardActorRef={card} />
+      ))}
     </View>
   );
 };
