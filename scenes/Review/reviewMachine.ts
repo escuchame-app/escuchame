@@ -73,6 +73,7 @@ export const reviewMachine = reviewModel.createMachine(
             }),
           onDone: {
             target: "Playing",
+            actions: "incrementIndex",
           },
           onError: "Error",
         },
@@ -93,21 +94,9 @@ export const reviewMachine = reviewModel.createMachine(
   },
   {
     actions: {
-      showNextCard: send(
-        {
-          type: "SHOW",
-        },
-        {
-          to: (context: ReviewContext) => {
-            console.log("HI!!!0");
-            const ref = context.cardQueue.shift();
-            if (!ref) {
-              throw new Error("no cards in queue!, shouldnt happen");
-            }
-            return ref;
-          },
-        }
-      ),
+      incrementIndex: reviewModel.assign({
+        currentIndex: (ctx) => ctx.currentIndex + 1,
+      }),
     },
     guards: {
       isSessionComplete: (context) => false,
