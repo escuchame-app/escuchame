@@ -1,11 +1,12 @@
-import { useInterpret, useMachine, useSelector } from "@xstate/react";
-import React, { FC, Fragment, memo, useCallback, useContext } from "react";
-import { Button, StyleSheet, Text, View } from "react-native";
+import { useInterpret, useSelector } from "@xstate/react";
+import React, { FC, Fragment, memo, useContext, useEffect } from "react";
+import { StyleSheet, View } from "react-native";
+import { definitions } from "../../@types/supabase";
 import { AppServiceContext } from "../../AppService";
-import { reviewMachine, reviewModel, ReviewState } from "./reviewMachine";
-import { ReviewServiceContext } from "./ReviewService";
+import { supabase } from "../../lib/supabase";
 import { Card } from "./Card";
-import { CardActorRef } from "./cardMachine";
+import { reviewMachine, ReviewState } from "./reviewMachine";
+import { ReviewServiceContext } from "./ReviewService";
 
 const ReviewScene = memo(() => {
   const appService = useContext(AppServiceContext);
@@ -29,6 +30,10 @@ const ReviewComponent: FC = () => {
     reviewService,
     (state: ReviewState) => state.context.cardQueue
   );
+
+  useEffect(() => {
+    // const allCards = supabase.from<definitions["cards"]>("cards").select("id");
+  }, []);
 
   return (
     <View style={styles.container}>

@@ -3,6 +3,7 @@ import React, { FC, Fragment, memo, useCallback, useContext } from "react";
 import { Button, StyleSheet, Text, View } from "react-native";
 import { appModel } from "../../appMachine";
 import { AppServiceContext } from "../../AppService";
+import { supabase } from "../../lib/supabase";
 
 const HomeScene = memo(() => {
   const appService = useContext(AppServiceContext);
