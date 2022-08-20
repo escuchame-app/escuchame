@@ -10,6 +10,8 @@ import {
 } from "xstate";
 import { send } from "xstate/lib/actions";
 import { createModel } from "xstate/lib/model";
+import { definitions } from "../../@types/supabase";
+import { supabase } from "../../lib/supabase";
 import { CardActorRef, createCardMachine } from "./cardMachine";
 import { SessionActorRef, createSessionMachine } from "./sessionMachine";
 import { Card, Session } from "./types";
@@ -127,12 +129,21 @@ const mockCards = [
 ];
 
 const startSession: () => Promise<StartSessionResponse> = async () => {
-  const session: Session = {
-    id: "foo",
-  };
+  const id = supabase.auth.session()?.user?.id;
+  if (!id) {
+    throw new Error("ts assert: no id");
+  }
+
+  const { data, error } = await supabase
+    .from<definitions["sessions"]>("sessions")
+    .insert([{ user_id: id }]);
+
+  console.log(data);
 
   return {
-    session,
+    session: {
+      id: "foo",
+    },
     cards: mockCards,
   };
 };

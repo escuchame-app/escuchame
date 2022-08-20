@@ -32,7 +32,13 @@ const ReviewComponent: FC = () => {
   );
 
   useEffect(() => {
-    // const allCards = supabase.from<definitions["cards"]>("cards").select("id");
+    const allCards = supabase
+      .from<definitions["cards"]>("cards")
+      .select("*")
+      .limit(10)
+      .then((f) => {
+        // console.log(f);
+      });
   }, []);
 
   return (

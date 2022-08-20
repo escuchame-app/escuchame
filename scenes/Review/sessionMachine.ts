@@ -25,8 +25,9 @@ const sessionModel = createModel(
   },
   {
     events: {
-      REVEAL: () => ({}),
-      PLAY: () => ({}),
+      FINISH: () => ({}),
+      PAUSE: () => ({}),
+      RESUME: () => ({}),
     },
   }
 );
@@ -34,8 +35,23 @@ const sessionModel = createModel(
 const sessionMachine = sessionModel.createMachine(
   {
     id: "SessionMachine",
-    type: "parallel",
-    states: {},
+    initial: "Active",
+    states: {
+      Active: {
+        on: {
+          PAUSE: "Inactive",
+          FINISH: "Complete",
+        },
+      },
+      Inactive: {
+        on: {
+          RESUME: "Active",
+        },
+      },
+      Complete: {
+        type: "final" as const,
+      },
+    },
   },
   {}
 );
