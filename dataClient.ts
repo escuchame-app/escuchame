@@ -13,13 +13,15 @@ import {
  * @param name name of the supabase function
  * @returns data from the function call
  */
-async function createSupabaseFunction<ResponseType>(name: string) {
-  const { data, error } = await supabase.functions.invoke<ResponseType>(name);
-  if (!data) {
-    console.error(error);
-    throw new Error("no data");
-  }
-  return data;
+function createSupabaseFunction<ResponseType>(name: string) {
+  return async () => {
+    const { data, error } = await supabase.functions.invoke<ResponseType>(name);
+    if (!data) {
+      console.error(error);
+      throw new Error("no data");
+    }
+    return data;
+  };
 }
 
 function createDataClient(): DataClient {
