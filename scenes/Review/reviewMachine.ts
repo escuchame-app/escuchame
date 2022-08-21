@@ -1,20 +1,17 @@
 import {
-  ContextFrom,
-  EventFrom,
   ActorRefFrom,
-  StateFrom,
   assign,
+  ContextFrom,
   DoneInvokeEvent,
+  EventFrom,
   spawn,
-  actions,
+  StateFrom,
 } from "xstate";
-import { send } from "xstate/lib/actions";
 import { createModel } from "xstate/lib/model";
-import { definitions } from "../../@types/supabase";
-import { supabase } from "../../lib/supabase";
+import { dataClient } from "../../dataClient";
+import { Card, ReviewSession } from "../../types";
 import { CardActorRef, createCardMachine } from "./cardMachine";
-import { SessionActorRef, createSessionMachine } from "./sessionMachine";
-import { Card, Session } from "./types";
+import { createSessionMachine, SessionActorRef } from "./sessionMachine";
 
 // Keep in sync with web ui editor @
 // https://stately.ai/viz/4a3d93f0-fbad-4c1d-9dce-312d81f37fff
@@ -107,7 +104,7 @@ export const reviewMachine = reviewModel.createMachine(
 );
 
 interface StartSessionResponse {
-  session: Session;
+  session: ReviewSession;
   cards: Card[];
 }
 
@@ -129,22 +126,14 @@ const mockCards = [
 ];
 
 const startSession: () => Promise<StartSessionResponse> = async () => {
-  const id = supabase.auth.session()?.user?.id;
-  if (!id) {
-    throw new Error("ts assert: no id");
-  }
-
-  const { data, error } = await supabase
-    .from<definitions["sessions"]>("sessions")
-    .insert([{ user_id: id }]);
-
-  console.log(data);
+  const [session, cards] = await Promise.all([
+    dataClient.getReviewSession(),
+    dataClient.getNextCards(),
+  ]);
 
   return {
-    session: {
-      id: "foo",
-    },
-    cards: mockCards,
+    session,
+    cards,
   };
 };
 

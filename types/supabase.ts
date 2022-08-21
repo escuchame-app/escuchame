@@ -12,6 +12,108 @@ export interface paths {
       };
     };
   };
+  "/review_sessions": {
+    get: {
+      parameters: {
+        query: {
+          id?: parameters["rowFilter.review_sessions.id"];
+          user_id?: parameters["rowFilter.review_sessions.user_id"];
+          started_at?: parameters["rowFilter.review_sessions.started_at"];
+          last_activity_at?: parameters["rowFilter.review_sessions.last_activity_at"];
+          completed_at?: parameters["rowFilter.review_sessions.completed_at"];
+          created_at?: parameters["rowFilter.review_sessions.created_at"];
+          /** Filtering Columns */
+          select?: parameters["select"];
+          /** Ordering */
+          order?: parameters["order"];
+          /** Limiting and Pagination */
+          offset?: parameters["offset"];
+          /** Limiting and Pagination */
+          limit?: parameters["limit"];
+        };
+        header: {
+          /** Limiting and Pagination */
+          Range?: parameters["range"];
+          /** Limiting and Pagination */
+          "Range-Unit"?: parameters["rangeUnit"];
+          /** Preference */
+          Prefer?: parameters["preferCount"];
+        };
+      };
+      responses: {
+        /** OK */
+        200: {
+          schema: definitions["review_sessions"][];
+        };
+        /** Partial Content */
+        206: unknown;
+      };
+    };
+    post: {
+      parameters: {
+        body: {
+          /** review_sessions */
+          review_sessions?: definitions["review_sessions"];
+        };
+        query: {
+          /** Filtering Columns */
+          select?: parameters["select"];
+        };
+        header: {
+          /** Preference */
+          Prefer?: parameters["preferReturn"];
+        };
+      };
+      responses: {
+        /** Created */
+        201: unknown;
+      };
+    };
+    delete: {
+      parameters: {
+        query: {
+          id?: parameters["rowFilter.review_sessions.id"];
+          user_id?: parameters["rowFilter.review_sessions.user_id"];
+          started_at?: parameters["rowFilter.review_sessions.started_at"];
+          last_activity_at?: parameters["rowFilter.review_sessions.last_activity_at"];
+          completed_at?: parameters["rowFilter.review_sessions.completed_at"];
+          created_at?: parameters["rowFilter.review_sessions.created_at"];
+        };
+        header: {
+          /** Preference */
+          Prefer?: parameters["preferReturn"];
+        };
+      };
+      responses: {
+        /** No Content */
+        204: never;
+      };
+    };
+    patch: {
+      parameters: {
+        query: {
+          id?: parameters["rowFilter.review_sessions.id"];
+          user_id?: parameters["rowFilter.review_sessions.user_id"];
+          started_at?: parameters["rowFilter.review_sessions.started_at"];
+          last_activity_at?: parameters["rowFilter.review_sessions.last_activity_at"];
+          completed_at?: parameters["rowFilter.review_sessions.completed_at"];
+          created_at?: parameters["rowFilter.review_sessions.created_at"];
+        };
+        body: {
+          /** review_sessions */
+          review_sessions?: definitions["review_sessions"];
+        };
+        header: {
+          /** Preference */
+          Prefer?: parameters["preferReturn"];
+        };
+      };
+      responses: {
+        /** No Content */
+        204: never;
+      };
+    };
+  };
   "/cards": {
     get: {
       parameters: {
@@ -216,16 +318,16 @@ export interface paths {
       };
     };
   };
-  "/sessions": {
+  "/review_responses": {
     get: {
       parameters: {
         query: {
-          id?: parameters["rowFilter.sessions.id"];
-          user_id?: parameters["rowFilter.sessions.user_id"];
-          started_at?: parameters["rowFilter.sessions.started_at"];
-          last_activity_at?: parameters["rowFilter.sessions.last_activity_at"];
-          completed_at?: parameters["rowFilter.sessions.completed_at"];
-          created_at?: parameters["rowFilter.sessions.created_at"];
+          id?: parameters["rowFilter.review_responses.id"];
+          user_id?: parameters["rowFilter.review_responses.user_id"];
+          session_id?: parameters["rowFilter.review_responses.session_id"];
+          card_id?: parameters["rowFilter.review_responses.card_id"];
+          correct?: parameters["rowFilter.review_responses.correct"];
+          created_at?: parameters["rowFilter.review_responses.created_at"];
           /** Filtering Columns */
           select?: parameters["select"];
           /** Ordering */
@@ -247,7 +349,7 @@ export interface paths {
       responses: {
         /** OK */
         200: {
-          schema: definitions["sessions"][];
+          schema: definitions["review_responses"][];
         };
         /** Partial Content */
         206: unknown;
@@ -256,8 +358,8 @@ export interface paths {
     post: {
       parameters: {
         body: {
-          /** sessions */
-          sessions?: definitions["sessions"];
+          /** review_responses */
+          review_responses?: definitions["review_responses"];
         };
         query: {
           /** Filtering Columns */
@@ -276,12 +378,12 @@ export interface paths {
     delete: {
       parameters: {
         query: {
-          id?: parameters["rowFilter.sessions.id"];
-          user_id?: parameters["rowFilter.sessions.user_id"];
-          started_at?: parameters["rowFilter.sessions.started_at"];
-          last_activity_at?: parameters["rowFilter.sessions.last_activity_at"];
-          completed_at?: parameters["rowFilter.sessions.completed_at"];
-          created_at?: parameters["rowFilter.sessions.created_at"];
+          id?: parameters["rowFilter.review_responses.id"];
+          user_id?: parameters["rowFilter.review_responses.user_id"];
+          session_id?: parameters["rowFilter.review_responses.session_id"];
+          card_id?: parameters["rowFilter.review_responses.card_id"];
+          correct?: parameters["rowFilter.review_responses.correct"];
+          created_at?: parameters["rowFilter.review_responses.created_at"];
         };
         header: {
           /** Preference */
@@ -296,118 +398,16 @@ export interface paths {
     patch: {
       parameters: {
         query: {
-          id?: parameters["rowFilter.sessions.id"];
-          user_id?: parameters["rowFilter.sessions.user_id"];
-          started_at?: parameters["rowFilter.sessions.started_at"];
-          last_activity_at?: parameters["rowFilter.sessions.last_activity_at"];
-          completed_at?: parameters["rowFilter.sessions.completed_at"];
-          created_at?: parameters["rowFilter.sessions.created_at"];
+          id?: parameters["rowFilter.review_responses.id"];
+          user_id?: parameters["rowFilter.review_responses.user_id"];
+          session_id?: parameters["rowFilter.review_responses.session_id"];
+          card_id?: parameters["rowFilter.review_responses.card_id"];
+          correct?: parameters["rowFilter.review_responses.correct"];
+          created_at?: parameters["rowFilter.review_responses.created_at"];
         };
         body: {
-          /** sessions */
-          sessions?: definitions["sessions"];
-        };
-        header: {
-          /** Preference */
-          Prefer?: parameters["preferReturn"];
-        };
-      };
-      responses: {
-        /** No Content */
-        204: never;
-      };
-    };
-  };
-  "/responses": {
-    get: {
-      parameters: {
-        query: {
-          id?: parameters["rowFilter.responses.id"];
-          user_id?: parameters["rowFilter.responses.user_id"];
-          session_id?: parameters["rowFilter.responses.session_id"];
-          card_id?: parameters["rowFilter.responses.card_id"];
-          correct?: parameters["rowFilter.responses.correct"];
-          created_at?: parameters["rowFilter.responses.created_at"];
-          /** Filtering Columns */
-          select?: parameters["select"];
-          /** Ordering */
-          order?: parameters["order"];
-          /** Limiting and Pagination */
-          offset?: parameters["offset"];
-          /** Limiting and Pagination */
-          limit?: parameters["limit"];
-        };
-        header: {
-          /** Limiting and Pagination */
-          Range?: parameters["range"];
-          /** Limiting and Pagination */
-          "Range-Unit"?: parameters["rangeUnit"];
-          /** Preference */
-          Prefer?: parameters["preferCount"];
-        };
-      };
-      responses: {
-        /** OK */
-        200: {
-          schema: definitions["responses"][];
-        };
-        /** Partial Content */
-        206: unknown;
-      };
-    };
-    post: {
-      parameters: {
-        body: {
-          /** responses */
-          responses?: definitions["responses"];
-        };
-        query: {
-          /** Filtering Columns */
-          select?: parameters["select"];
-        };
-        header: {
-          /** Preference */
-          Prefer?: parameters["preferReturn"];
-        };
-      };
-      responses: {
-        /** Created */
-        201: unknown;
-      };
-    };
-    delete: {
-      parameters: {
-        query: {
-          id?: parameters["rowFilter.responses.id"];
-          user_id?: parameters["rowFilter.responses.user_id"];
-          session_id?: parameters["rowFilter.responses.session_id"];
-          card_id?: parameters["rowFilter.responses.card_id"];
-          correct?: parameters["rowFilter.responses.correct"];
-          created_at?: parameters["rowFilter.responses.created_at"];
-        };
-        header: {
-          /** Preference */
-          Prefer?: parameters["preferReturn"];
-        };
-      };
-      responses: {
-        /** No Content */
-        204: never;
-      };
-    };
-    patch: {
-      parameters: {
-        query: {
-          id?: parameters["rowFilter.responses.id"];
-          user_id?: parameters["rowFilter.responses.user_id"];
-          session_id?: parameters["rowFilter.responses.session_id"];
-          card_id?: parameters["rowFilter.responses.card_id"];
-          correct?: parameters["rowFilter.responses.correct"];
-          created_at?: parameters["rowFilter.responses.created_at"];
-        };
-        body: {
-          /** responses */
-          responses?: definitions["responses"];
+          /** review_responses */
+          review_responses?: definitions["review_responses"];
         };
         header: {
           /** Preference */
@@ -513,6 +513,28 @@ export interface paths {
 }
 
 export interface definitions {
+  review_sessions: {
+    /**
+     * Format: uuid
+     * @description Note:
+     * This is a Primary Key.<pk/>
+     * @default gen_random_uuid()
+     */
+    id: string;
+    /** Format: uuid */
+    user_id: string;
+    /** Format: timestamp with time zone */
+    started_at?: string;
+    /** Format: timestamp with time zone */
+    last_activity_at?: string;
+    /** Format: timestamp with time zone */
+    completed_at?: string;
+    /**
+     * Format: timestamp with time zone
+     * @default now()
+     */
+    created_at: string;
+  };
   cards: {
     /**
      * Format: character varying
@@ -564,29 +586,7 @@ export interface definitions {
      */
     created_at: string;
   };
-  sessions: {
-    /**
-     * Format: uuid
-     * @description Note:
-     * This is a Primary Key.<pk/>
-     * @default gen_random_uuid()
-     */
-    id: string;
-    /** Format: uuid */
-    user_id: string;
-    /** Format: timestamp with time zone */
-    started_at?: string;
-    /** Format: timestamp with time zone */
-    last_activity_at?: string;
-    /** Format: timestamp with time zone */
-    completed_at?: string;
-    /**
-     * Format: timestamp with time zone
-     * @default now()
-     */
-    created_at: string;
-  };
-  responses: {
+  review_responses: {
     /**
      * Format: uuid
      * @description Note:
@@ -599,7 +599,7 @@ export interface definitions {
     /**
      * Format: uuid
      * @description Note:
-     * This is a Foreign Key to `sessions.id`.<fk table='sessions' column='id'/>
+     * This is a Foreign Key to `review_sessions.id`.<fk table='review_sessions' column='id'/>
      */
     session_id: string;
     /**
@@ -664,6 +664,20 @@ export interface parameters {
   offset: string;
   /** @description Limiting and Pagination */
   limit: string;
+  /** @description review_sessions */
+  "body.review_sessions": definitions["review_sessions"];
+  /** Format: uuid */
+  "rowFilter.review_sessions.id": string;
+  /** Format: uuid */
+  "rowFilter.review_sessions.user_id": string;
+  /** Format: timestamp with time zone */
+  "rowFilter.review_sessions.started_at": string;
+  /** Format: timestamp with time zone */
+  "rowFilter.review_sessions.last_activity_at": string;
+  /** Format: timestamp with time zone */
+  "rowFilter.review_sessions.completed_at": string;
+  /** Format: timestamp with time zone */
+  "rowFilter.review_sessions.created_at": string;
   /** @description cards */
   "body.cards": definitions["cards"];
   /** Format: character varying */
@@ -692,34 +706,20 @@ export interface parameters {
   "rowFilter.card_sets.id": string;
   /** Format: timestamp with time zone */
   "rowFilter.card_sets.created_at": string;
-  /** @description sessions */
-  "body.sessions": definitions["sessions"];
+  /** @description review_responses */
+  "body.review_responses": definitions["review_responses"];
   /** Format: uuid */
-  "rowFilter.sessions.id": string;
+  "rowFilter.review_responses.id": string;
   /** Format: uuid */
-  "rowFilter.sessions.user_id": string;
-  /** Format: timestamp with time zone */
-  "rowFilter.sessions.started_at": string;
-  /** Format: timestamp with time zone */
-  "rowFilter.sessions.last_activity_at": string;
-  /** Format: timestamp with time zone */
-  "rowFilter.sessions.completed_at": string;
-  /** Format: timestamp with time zone */
-  "rowFilter.sessions.created_at": string;
-  /** @description responses */
-  "body.responses": definitions["responses"];
+  "rowFilter.review_responses.user_id": string;
   /** Format: uuid */
-  "rowFilter.responses.id": string;
+  "rowFilter.review_responses.session_id": string;
   /** Format: uuid */
-  "rowFilter.responses.user_id": string;
-  /** Format: uuid */
-  "rowFilter.responses.session_id": string;
-  /** Format: uuid */
-  "rowFilter.responses.card_id": string;
+  "rowFilter.review_responses.card_id": string;
   /** Format: boolean */
-  "rowFilter.responses.correct": string;
+  "rowFilter.review_responses.correct": string;
   /** Format: timestamp with time zone */
-  "rowFilter.responses.created_at": string;
+  "rowFilter.review_responses.created_at": string;
   /** @description languages */
   "body.languages": definitions["languages"];
   /** Format: timestamp with time zone */
