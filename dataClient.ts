@@ -1,18 +1,40 @@
-import { Card, ReviewSession, DataClient } from "./types";
+import { supabase } from "./lib/supabase";
+import {
+  Card,
+  ReviewSession,
+  DataClient,
+  GetNextCardsResponse,
+  StartSessionResponse,
+  SubmitResponseResponse,
+} from "./types";
+
+/**
+ * Wrapper function to easily give a type to supabase functions
+ * @param name name of the supabase function
+ * @returns data from the function call
+ */
+async function createSupabaseFunction<ResponseType>(name: string) {
+  const { data, error } = await supabase.functions.invoke<ResponseType>(name);
+  if (!data) {
+    console.error(error);
+    throw new Error("no data");
+  }
+  return data;
+}
 
 function createDataClient(): DataClient {
-  const getNextCards = async () => {
-    return [{ id: "1" }, { id: "2" }] as Card[];
-  };
-
-  const getReviewSession = async () => {
-    // await supabase.from<ReviewSessionsDef>
-    return { id: "1" } as ReviewSession;
-  };
+  // TODO can pull these all in to same generic function
+  const getNextCards =
+    createSupabaseFunction<GetNextCardsResponse>("get-next-cards");
+  const startSession =
+    createSupabaseFunction<StartSessionResponse>("start-session");
+  const submitResponse =
+    createSupabaseFunction<SubmitResponseResponse>("start-session");
 
   return {
     getNextCards,
-    getReviewSession,
+    startSession,
+    submitResponse,
   };
 }
 export const dataClient = createDataClient();

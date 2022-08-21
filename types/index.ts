@@ -1,13 +1,21 @@
 import { SnakeToCamelCaseNested } from "../utils/types";
 import { definitions } from "./supabase";
 
-export type ReviewSessionsDef = definitions["review_sessions"];
-export type ReviewSession = SnakeToCamelCaseNested<ReviewSessionsDef>;
-
 export type CardsDef = definitions["cards"];
 export type Card = SnakeToCamelCaseNested<CardsDef>;
 
+export type ReviewSessionsDef = definitions["review_sessions"];
+export type ReviewSession = SnakeToCamelCaseNested<ReviewSessionsDef>;
+
+export type ReviewResponsesDef = definitions["review_responses"];
+export type ReviewResponse = SnakeToCamelCaseNested<ReviewResponsesDef>;
+
+export type GetNextCardsResponse = Card[];
+export type StartSessionResponse = ReviewSession;
+export type SubmitResponseResponse = ReviewResponse;
+
 export interface DataClient {
-  getNextCards(): Promise<Card[]>;
-  getReviewSession(): Promise<ReviewSession>;
+  getNextCards(): Promise<GetNextCardsResponse>;
+  startSession(): Promise<StartSessionResponse>;
+  submitResponse(correct: boolean): Promise<SubmitResponseResponse>;
 }
