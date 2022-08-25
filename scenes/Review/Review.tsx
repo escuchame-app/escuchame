@@ -1,7 +1,7 @@
 import { useInterpret, useSelector } from "@xstate/react";
 import React, { FC, Fragment, memo, useContext, useEffect } from "react";
-import { StyleSheet, View } from "react-native";
-import { definitions } from "../../@types/supabase";
+import { StyleSheet, Text, View } from "react-native";
+import { definitions } from "../../types/supabase";
 import { AppServiceContext } from "../../AppService";
 import { supabase } from "../../lib/supabase";
 import { Card } from "./Card";
@@ -30,6 +30,10 @@ const ReviewComponent: FC = () => {
     reviewService,
     (state: ReviewState) => state.context.cardQueue
   );
+  const hasError = useSelector(reviewService, (state: ReviewState) =>
+    state.matches("Error")
+  );
+  // console.log(reviewService.getSnapshot().event);
 
   useEffect(() => {
     const allCards = supabase
@@ -40,6 +44,14 @@ const ReviewComponent: FC = () => {
         // console.log(f);
       });
   }, []);
+
+  if (hasError) {
+    return (
+      <View style={styles.container}>
+        <Text>There was an errror</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>

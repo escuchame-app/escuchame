@@ -239,7 +239,6 @@ export const appMachine = appModel.createMachine(
       bootstrapApp: () => {
         return new Promise((resolve, reject) => {
           const session = supabase.auth.session();
-          console.log("session", session?.user);
           resolve({ userId: session?.user?.id });
         });
       },

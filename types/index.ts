@@ -10,9 +10,18 @@ export type ReviewSession = SnakeToCamelCaseNested<ReviewSessionsDef>;
 export type ReviewResponsesDef = definitions["review_responses"];
 export type ReviewResponse = SnakeToCamelCaseNested<ReviewResponsesDef>;
 
-export type GetNextCardsResponse = Card[];
-export type StartSessionResponse = ReviewSession;
-export type SubmitResponseResponse = ReviewResponse;
+export type GetNextCardsResponse = {
+  data: Card[];
+  error: any;
+};
+export type StartSessionResponse = {
+  data: ReviewSession;
+  error: any;
+};
+export type SubmitResponseResponse = {
+  data: ReviewResponse;
+  error: any;
+};
 
 export interface DataClient {
   getNextCards(): Promise<GetNextCardsResponse>;

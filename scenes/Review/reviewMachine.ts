@@ -38,14 +38,19 @@ export const reviewMachine = reviewModel.createMachine(
         invoke: {
           id: "startSession",
           src: (context) => startSession(),
-          onError: {},
+          onError: {
+            target: "Error",
+          },
           onDone: {
             target: "Playing",
             actions: assign({
               sessionRef: (_, event: DoneInvokeEvent<StartSessionResponse>) =>
                 spawn(createSessionMachine(event.data.session)),
-              cardQueue: (_, event: DoneInvokeEvent<StartSessionResponse>) =>
-                event.data.cards.map((card) => spawn(createCardMachine(card))),
+              cardQueue: (_, event: DoneInvokeEvent<StartSessionResponse>) => {
+                return event.data.cards.map((card) =>
+                  spawn(createCardMachine(card))
+                );
+              },
             }),
           },
         },
@@ -108,32 +113,15 @@ interface StartSessionResponse {
   cards: Card[];
 }
 
-const mockCards = [
-  {
-    id: "1",
-    nativeTranslation: "Hello my name is Jon",
-    foreignTranslation: "Hola mi nombre es juan",
-    audioURL:
-      "https://storage.googleapis.com/escuchame-card-data-staging/Tatoeba%20arh%20sentence%20EngID%2042168%20SpaID%201240330.mp3",
-  },
-  {
-    id: "2",
-    nativeTranslation: "Music is my language and the world is my famil",
-    foreignTranslation: "Musica es mi lengua y la mundo es mi familia",
-    audioURL:
-      "https://storage.googleapis.com/escuchame-card-data-staging/Tatoeba%20arh%20sentence%20EngID%202064857%20SpaID%202071823.mp3",
-  },
-];
-
 const startSession: () => Promise<StartSessionResponse> = async () => {
-  const [session, cards] = await Promise.all([
-    dataClient.getReviewSession(),
+  const [sessionResp, cardsResp] = await Promise.all([
+    dataClient.startSession(),
     dataClient.getNextCards(),
   ]);
 
   return {
-    session,
-    cards,
+    session: sessionResp.data,
+    cards: cardsResp.data,
   };
 };
 

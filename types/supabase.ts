@@ -324,7 +324,7 @@ export interface paths {
         query: {
           id?: parameters["rowFilter.review_responses.id"];
           user_id?: parameters["rowFilter.review_responses.user_id"];
-          session_id?: parameters["rowFilter.review_responses.session_id"];
+          review_session_id?: parameters["rowFilter.review_responses.review_session_id"];
           card_id?: parameters["rowFilter.review_responses.card_id"];
           correct?: parameters["rowFilter.review_responses.correct"];
           created_at?: parameters["rowFilter.review_responses.created_at"];
@@ -380,7 +380,7 @@ export interface paths {
         query: {
           id?: parameters["rowFilter.review_responses.id"];
           user_id?: parameters["rowFilter.review_responses.user_id"];
-          session_id?: parameters["rowFilter.review_responses.session_id"];
+          review_session_id?: parameters["rowFilter.review_responses.review_session_id"];
           card_id?: parameters["rowFilter.review_responses.card_id"];
           correct?: parameters["rowFilter.review_responses.correct"];
           created_at?: parameters["rowFilter.review_responses.created_at"];
@@ -400,7 +400,7 @@ export interface paths {
         query: {
           id?: parameters["rowFilter.review_responses.id"];
           user_id?: parameters["rowFilter.review_responses.user_id"];
-          session_id?: parameters["rowFilter.review_responses.session_id"];
+          review_session_id?: parameters["rowFilter.review_responses.review_session_id"];
           card_id?: parameters["rowFilter.review_responses.card_id"];
           correct?: parameters["rowFilter.review_responses.correct"];
           created_at?: parameters["rowFilter.review_responses.created_at"];
@@ -525,8 +525,11 @@ export interface definitions {
     user_id: string;
     /** Format: timestamp with time zone */
     started_at?: string;
-    /** Format: timestamp with time zone */
-    last_activity_at?: string;
+    /**
+     * Format: timestamp with time zone
+     * @default now()
+     */
+    last_activity_at: string;
     /** Format: timestamp with time zone */
     completed_at?: string;
     /**
@@ -601,7 +604,7 @@ export interface definitions {
      * @description Note:
      * This is a Foreign Key to `review_sessions.id`.<fk table='review_sessions' column='id'/>
      */
-    session_id: string;
+    review_session_id: string;
     /**
      * Format: uuid
      * @description Note:
@@ -713,7 +716,7 @@ export interface parameters {
   /** Format: uuid */
   "rowFilter.review_responses.user_id": string;
   /** Format: uuid */
-  "rowFilter.review_responses.session_id": string;
+  "rowFilter.review_responses.review_session_id": string;
   /** Format: uuid */
   "rowFilter.review_responses.card_id": string;
   /** Format: boolean */
